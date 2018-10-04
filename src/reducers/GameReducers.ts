@@ -2,6 +2,7 @@ import * as Long from 'long';
 import { IAction, ChessActionType } from '../actions/ChessActions';
 import { combineReducers } from 'redux';
 import { Utils } from '../models/GameUtils';
+import { Game } from '../models/Game';
 
 export interface IBoardApp {
     BoardPieces: IBoardPieces, 
@@ -22,6 +23,7 @@ export interface IBoardPieces {
     W_BISHOPS: Long;
     W_QUEENS: Long;
     W_KING: Long;
+    FUTURE_MOVES?: number[];
 }
 
 export interface IBoardState {
@@ -88,10 +90,15 @@ function initBoardState(): IBoardState {
     return init;
 }
 
-export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), action: IAction): IBoardPieces {
+export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), action: any): IBoardPieces {
     switch (action.type) {
         case ChessActionType.INIT:
             return initBoardPieces();
+        case ChessActionType.SELECT_PIECE:
+            Game.instance().loadGame(action.board);
+            return Object.assign({}, state, {
+                FUTURE_MOVES: Game.instance().getFutureMove(action.position)
+            });
         default:
             return state;
     }

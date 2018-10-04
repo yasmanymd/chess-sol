@@ -16,6 +16,9 @@
 .dark {
     background-color: gray;
 }
+.f-move {
+    border: solid 1px red;
+}
 .b-bishop {
     background-image: url(../themes/default/bbishop.png);
     background-size: 100%;

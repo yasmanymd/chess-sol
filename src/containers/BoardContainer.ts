@@ -1,19 +1,22 @@
 import { IBoardApp } from '../reducers/GameReducers';
 import Board, { IBoardProps } from '../components/Board/Board';
 import { connect } from 'react-redux';
-import { init, changeView } from '../actions/ChessActions';
+import { init, changeView, selectPiece } from '../actions/ChessActions';
 
 const mapStateToProps = (state: IBoardApp): IBoardProps => {
     return Object.assign({}, state.BoardPieces, state.BoardState);
 }
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: any, ownProps: any) => {
     return {
         onInit: () => {
-            dispatch(init())
+            dispatch(init());
         },
         onChangeView: () => {
-            dispatch(changeView())
+            dispatch(changeView());
+        }, 
+        onCellClick: (props: IBoardProps, position: number) => {
+            dispatch(selectPiece(props, position));
         }
     };
 }

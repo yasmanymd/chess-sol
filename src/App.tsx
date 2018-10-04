@@ -10,7 +10,6 @@ import BoardContainer from './containers/BoardContainer';
 class App extends React.Component {
   public render() {
     const store = createStore(BoardApp);
-    window["store"] = store;
 
     return (
       <div className="App">

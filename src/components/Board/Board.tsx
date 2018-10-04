@@ -1,7 +1,8 @@
 import * as React from 'react';
 import './css/board.css';
-import { Game } from '../../models/Game';
 import { Utils } from '../../models/GameUtils';
+import { BitGameState } from '../../models/Game';
+import { Piece } from '../../models/Piece';
 
 export interface IBoardProps {
     B_PAWNS: Long;
@@ -23,9 +24,11 @@ export interface IBoardProps {
     B_CASTLING: boolean;
     W_CASTLING: boolean;
     W_VIEW: boolean; //True - White, False - Black
+    FUTURE_MOVES?: number[];
 
     onInit?: (event: any) => void;
     onChangeView?: (event: any) => void;
+    onCellClick?: (event: any) => void;
 }
 
 function Board(props: IBoardProps) {
@@ -40,9 +43,13 @@ function Board(props: IBoardProps) {
                                 let c = props.W_VIEW ? col : 7-col;
                                 let cellNumber =  r*8+c;
                                 let cellColor = (r%2 === c%2) ? " dark" : " light";
-                                let piece = " " + Game.getClassName(Game.getPiece(props, cellNumber));
+                                let piece = " " + Piece.getClassName(BitGameState.getPiece(props, cellNumber));
+                                let fmove =  "";
+                                if (props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0) {
+                                    fmove = "f-move";
+                                }
                                 return (
-                                    <div key={row*8+col} className={"cell c" + (cellNumber) + (cellColor) + (piece)} />
+                                    <div key={cellNumber} className={"cell c" + (cellNumber) + (cellColor) + (piece) + (fmove)} onClick={props.onCellClick!.bind(null, props, cellNumber)} />
                                 );
                             }) }
                         </div>
