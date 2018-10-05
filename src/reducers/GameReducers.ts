@@ -24,6 +24,7 @@ export interface IBoardPieces {
     W_QUEENS: Long;
     W_KING: Long;
     FUTURE_MOVES?: number[];
+    SELECTED_POSITION?: number;
 }
 
 export interface IBoardState {
@@ -91,13 +92,39 @@ function initBoardState(): IBoardState {
 }
 
 export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), action: any): IBoardPieces {
+    let g = Game.instance();
+
     switch (action.type) {
         case ChessActionType.INIT:
             return initBoardPieces();
         case ChessActionType.SELECT_PIECE:
-            Game.instance().loadGame(action.board);
+            g.loadGame(action.board);
+            g.updateState(action.board.W_MOVE);
             return Object.assign({}, state, {
+                SELECTED_POSITION: action.position,
                 FUTURE_MOVES: Game.instance().getFutureMove(action.position)
+            });
+        case ChessActionType.DO_MOVE:
+            g.loadGame(action.board);
+            g.updateState(action.board.W_MOVE);
+            g.move(action.board.SELECTED_POSITION, action.position);
+            return Object.assign({}, state, {
+                B_PAWNS: g.B_PAWNS,
+                B_ROOKS: g.B_ROOKS,
+                B_KNIGHTS: g.B_KNIGHTS,
+                B_BISHOPS: g.B_BISHOPS,
+                B_QUEENS: g.B_QUEENS,
+                B_KING: g.B_KING,
+
+                W_PAWNS: g.W_PAWNS,
+                W_ROOKS: g.W_ROOKS,
+                W_KNIGHTS: g.W_KNIGHTS,
+                W_BISHOPS: g.W_BISHOPS,
+                W_QUEENS: g.W_QUEENS,
+                W_KING: g.W_KING,
+                
+                SELECTED_POSITION: null,
+                FUTURE_MOVES: null
             });
         default:
             return state;
@@ -109,6 +136,10 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.CHANGE_VIEW:
             return Object.assign({}, state, {
                 W_VIEW: !state.W_VIEW
+            });
+        case ChessActionType.DO_MOVE:
+            return Object.assign({}, state, {
+                W_MOVE: !state.W_MOVE
             });
         default:
             return state;

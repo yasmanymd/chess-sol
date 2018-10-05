@@ -3,7 +3,8 @@ import { IBoardProps } from '../components/Board/Board';
 export enum ChessActionType {
     INIT = "INIT", 
     CHANGE_VIEW = "CHANGE_VIEW",
-    SELECT_PIECE = "SELECT_PIECE"
+    SELECT_PIECE = "SELECT_PIECE",
+    DO_MOVE = "DO_MOVE"
 }
 
 export interface IAction {
@@ -25,6 +26,14 @@ export function changeView(): IAction {
 export function selectPiece(board: IBoardProps, position: number): any {
     return {
         type: ChessActionType.SELECT_PIECE,
+        board: board,
+        position: position
+    };
+}
+
+export function doMove(board: IBoardProps, position: number): any {
+    return {
+        type: ChessActionType.DO_MOVE,
         board: board,
         position: position
     };

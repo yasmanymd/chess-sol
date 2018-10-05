@@ -41,4 +41,20 @@ export class Utils {
         }
         return result;
     }
+
+    public static showBoardFromLong(board: Long) {
+        for (var i=7; i>=0; i--) {
+            var s = "";
+            for (var j=0; j<8; j++) {
+                s += board.and(this.longPos(i*8+j)).equals(this.longPos(i*8+j)) ? "1" : "0";
+            }
+            console.log(s);
+        }
+    }
+
+    public static showBoardFromString(board: string) {
+        return this.showBoardFromLong(Long.fromString(board));
+    }
 }
+
+window["utils"] = Utils;

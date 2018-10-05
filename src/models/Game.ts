@@ -16,6 +16,18 @@ export interface IGameState {
     updateState(isWhiteMove: boolean): void;
     coronate(piece: string): void;
     coronation?: string;
+    W_ROOKS: Long;
+    W_KNIGHTS: Long;
+    W_BISHOPS: Long;
+    W_QUEENS: Long;
+    W_KING: Long;
+    W_PAWNS: Long;
+    B_ROOKS: Long;
+    B_KNIGHTS: Long;
+    B_BISHOPS: Long;
+    B_QUEENS: Long;
+    B_KING: Long;
+    B_PAWNS: Long;
 }
 
 export class BitGameState implements IGameState {
@@ -33,18 +45,18 @@ export class BitGameState implements IGameState {
         this.updateState(this._isWhiteMove);
     }
 
-    private W_ROOKS = Long.fromInt(0);
-    private W_KNIGHTS = Long.fromInt(0);
-    private W_BISHOPS = Long.fromInt(0);
-    private W_QUEENS = Long.fromInt(0);
-    private W_KING = Long.fromInt(0);
-    private W_PAWNS = Long.fromInt(0);
-    private B_ROOKS = Long.fromInt(0);
-    private B_KNIGHTS = Long.fromInt(0);
-    private B_BISHOPS = Long.fromInt(0);
-    private B_QUEENS = Long.fromInt(0);
-    private B_KING = Long.fromInt(0);
-    private B_PAWNS = Long.fromInt(0);
+    public W_ROOKS = Long.fromInt(0);
+    public W_KNIGHTS = Long.fromInt(0);
+    public W_BISHOPS = Long.fromInt(0);
+    public W_QUEENS = Long.fromInt(0);
+    public W_KING = Long.fromInt(0);
+    public W_PAWNS = Long.fromInt(0);
+    public B_ROOKS = Long.fromInt(0);
+    public B_KNIGHTS = Long.fromInt(0);
+    public B_BISHOPS = Long.fromInt(0);
+    public B_QUEENS = Long.fromInt(0);
+    public B_KING = Long.fromInt(0);
+    public B_PAWNS = Long.fromInt(0);
 
     public static W_ROOKS_CHAR = 'r';
     public static W_KNIGHTS_CHAR = 'n';

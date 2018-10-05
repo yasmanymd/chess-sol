@@ -28,7 +28,8 @@ export interface IBoardProps {
 
     onInit?: (event: any) => void;
     onChangeView?: (event: any) => void;
-    onCellClick?: (event: any) => void;
+    onSelectedPiece?: (event: any) => void;
+    onDoMove?: (event: any) => void;
 }
 
 function Board(props: IBoardProps) {
@@ -43,13 +44,17 @@ function Board(props: IBoardProps) {
                                 let c = props.W_VIEW ? col : 7-col;
                                 let cellNumber =  r*8+c;
                                 let cellColor = (r%2 === c%2) ? " dark" : " light";
-                                let piece = " " + Piece.getClassName(BitGameState.getPiece(props, cellNumber));
+                                let pieceChar = BitGameState.getPiece(props, cellNumber);
+                                let piece = " " + Piece.getClassName(pieceChar);
+                                let onClick = (pieceChar && ((props.W_MOVE && pieceChar == pieceChar.toLowerCase()) || (!props.W_MOVE && pieceChar == pieceChar.toUpperCase()))) ? props.onSelectedPiece!.bind(null, props, cellNumber) : null;
                                 let fmove =  "";
                                 if (props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0) {
                                     fmove = "f-move";
+                                    onClick = props.onDoMove!.bind(null, props, cellNumber)
                                 }
+                                
                                 return (
-                                    <div key={cellNumber} className={"cell c" + (cellNumber) + (cellColor) + (piece) + (fmove)} onClick={props.onCellClick!.bind(null, props, cellNumber)} />
+                                    <div key={cellNumber} className={"cell c" + (cellNumber) + (cellColor) + (piece) + (fmove)} onClick={onClick} />
                                 );
                             }) }
                         </div>
