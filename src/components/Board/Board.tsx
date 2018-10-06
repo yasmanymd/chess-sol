@@ -3,6 +3,7 @@ import './css/board.css';
 import { Utils } from '../../models/GameUtils';
 import { BitGameState } from '../../models/Game';
 import { Piece } from '../../models/Piece';
+import * as classnames from "classnames";
 
 export interface IBoardProps {
     B_PAWNS: Long;
@@ -43,18 +44,21 @@ function Board(props: IBoardProps) {
                                 let r = props.W_VIEW ? 7-row : row;
                                 let c = props.W_VIEW ? col : 7-col;
                                 let cellNumber =  r*8+c;
-                                let cellColor = (r%2 === c%2) ? " dark" : " light";
                                 let pieceChar = BitGameState.getPiece(props, cellNumber);
-                                let piece = " " + Piece.getClassName(pieceChar);
+                                let cellAttrs = {
+                                    className: classnames("cell", "c" + cellNumber, Piece.getClassName(pieceChar), {
+                                        "dark": r%2 === c%2,
+                                        "light": r%2 !== c%2,
+                                        "f-move": props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0
+                                    })
+                                };
                                 let onClick = (pieceChar && ((props.W_MOVE && pieceChar == pieceChar.toLowerCase()) || (!props.W_MOVE && pieceChar == pieceChar.toUpperCase()))) ? props.onSelectedPiece!.bind(null, props, cellNumber) : null;
-                                let fmove =  "";
-                                if (props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0) {
-                                    fmove = "f-move";
+                                if (cellAttrs.className.includes("f-move")) {
                                     onClick = props.onDoMove!.bind(null, props, cellNumber)
                                 }
                                 
                                 return (
-                                    <div key={cellNumber} className={"cell c" + (cellNumber) + (cellColor) + (piece) + (fmove)} onClick={onClick} />
+                                    <div key={cellNumber} {...cellAttrs} onClick={onClick} />
                                 );
                             }) }
                         </div>

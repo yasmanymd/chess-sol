@@ -133,6 +133,8 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
 
 export function BoardStateReducer(state: IBoardState = initBoardState(), action: IAction): IBoardState {
     switch (action.type) {
+        case ChessActionType.INIT:
+            return initBoardState();
         case ChessActionType.CHANGE_VIEW:
             return Object.assign({}, state, {
                 W_VIEW: !state.W_VIEW
