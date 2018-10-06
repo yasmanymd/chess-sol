@@ -26,11 +26,13 @@ export interface IBoardProps {
     W_CASTLING: boolean;
     W_VIEW: boolean; //True - White, False - Black
     FUTURE_MOVES?: number[];
+    CORONATE: number | null;
 
     onInit?: (event: any) => void;
     onChangeView?: (event: any) => void;
     onSelectedPiece?: (event: any) => void;
     onDoMove?: (event: any) => void;
+    onCoronate?: (event: any) => void;
 }
 
 function Board(props: IBoardProps) {
@@ -56,7 +58,9 @@ function Board(props: IBoardProps) {
                                 if (cellAttrs.className.includes("f-move")) {
                                     onClick = props.onDoMove!.bind(null, props, cellNumber)
                                 }
-                                
+                                if (props.CORONATE) {
+                                    onClick = null;
+                                }
                                 return (
                                     <div key={cellNumber} {...cellAttrs} onClick={onClick} />
                                 );
@@ -65,6 +69,22 @@ function Board(props: IBoardProps) {
                     );                
                 }) }
             </div>
+            { props.CORONATE != null && props.CORONATE >= 56 && (
+                <div className="cor-pieces">
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.W_QUEENS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.W_QUEENS_CHAR)} />
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.W_ROOKS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.W_ROOKS_CHAR)} />
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.W_BISHOPS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.W_BISHOPS_CHAR)} />
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.W_KNIGHTS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.W_KNIGHTS_CHAR)} />
+                </div>
+            ) }
+            { props.CORONATE != null && props.CORONATE < 8 && (
+                <div className="cor-pieces">
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.B_QUEENS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.B_QUEENS_CHAR)} />
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.B_ROOKS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.B_ROOKS_CHAR)} />
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.B_BISHOPS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.B_BISHOPS_CHAR)} />
+                    <div className={"cell-cor-pieces " + Piece.getClassName(BitGameState.B_KNIGHTS_CHAR)} onClick={props.onCoronate!.bind(null, props, props.CORONATE, BitGameState.B_KNIGHTS_CHAR)} />
+                </div>
+            ) }
             <div className="actions">
                 <button onClick={props.onInit}>Init</button>
                 <button onClick={props.onChangeView}>Change</button>

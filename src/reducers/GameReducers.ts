@@ -1,8 +1,8 @@
 import * as Long from 'long';
-import { IAction, ChessActionType } from '../actions/ChessActions';
+import { ChessActionType } from '../actions/ChessActions';
 import { combineReducers } from 'redux';
 import { Utils } from '../models/GameUtils';
-import { Game } from '../models/Game';
+import { Game, BitGameState } from '../models/Game';
 
 export interface IBoardApp {
     BoardPieces: IBoardPieces, 
@@ -33,6 +33,7 @@ export interface IBoardState {
     B_CASTLING: boolean;
     W_CASTLING: boolean;
     W_VIEW: boolean; //True - White, False - Black
+    CORONATE: number | null;
 }
 
 function createBoardPieces(): IBoardPieces {
@@ -85,7 +86,8 @@ function initBoardState(): IBoardState {
       B_CASTLING: false,
       W_CASTLING: false,
       W_MOVE: true,
-      W_VIEW: true
+      W_VIEW: true,
+      CORONATE: null
     };
 
     return init;
@@ -102,7 +104,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
             g.updateState(action.board.W_MOVE);
             return Object.assign({}, state, {
                 SELECTED_POSITION: action.position,
-                FUTURE_MOVES: Game.instance().getFutureMove(action.position)
+                FUTURE_MOVES: g.getFutureMove(action.position)
             });
         case ChessActionType.DO_MOVE:
             g.loadGame(action.board);
@@ -126,12 +128,34 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 SELECTED_POSITION: null,
                 FUTURE_MOVES: null
             });
+        case ChessActionType.CORONATE:
+            g.loadGame(action.board);
+            g.updateState(action.board.W_MOVE);
+            g.setPiece(action.piece, action.position);
+            return Object.assign({}, state, {
+                B_PAWNS: g.B_PAWNS,
+                B_ROOKS: g.B_ROOKS,
+                B_KNIGHTS: g.B_KNIGHTS,
+                B_BISHOPS: g.B_BISHOPS,
+                B_QUEENS: g.B_QUEENS,
+                B_KING: g.B_KING,
+
+                W_PAWNS: g.W_PAWNS,
+                W_ROOKS: g.W_ROOKS,
+                W_KNIGHTS: g.W_KNIGHTS,
+                W_BISHOPS: g.W_BISHOPS,
+                W_QUEENS: g.W_QUEENS,
+                W_KING: g.W_KING,
+                
+                SELECTED_POSITION: null,
+                FUTURE_MOVES: null
+            });
         default:
             return state;
     }
 }
 
-export function BoardStateReducer(state: IBoardState = initBoardState(), action: IAction): IBoardState {
+export function BoardStateReducer(state: IBoardState = initBoardState(), action: any): IBoardState {
     switch (action.type) {
         case ChessActionType.INIT:
             return initBoardState();
@@ -140,7 +164,18 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 W_VIEW: !state.W_VIEW
             });
         case ChessActionType.DO_MOVE:
+            if ((action.position >= 56 && BitGameState.getPiece(action.board, action.board.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
+                (action.position <= 7 && BitGameState.getPiece(action.board, action.board.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR)) {
+                return Object.assign({}, state, {
+                    CORONATE: action.position
+                });
+            }
             return Object.assign({}, state, {
+                W_MOVE: !state.W_MOVE
+            });
+        case ChessActionType.CORONATE:
+            return Object.assign({}, state, {
+                CORONATE: null,
                 W_MOVE: !state.W_MOVE
             });
         default:
