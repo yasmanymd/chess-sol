@@ -5,8 +5,8 @@ import App from './App';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
-const socket = io();
-socket.on('hello', (data: { message: string }) => alert(data.message));
+const socket = io('https://chess-yas.herokuapp.com/');
+socket.on('chat', (message: string) => alert(message));
 
 ReactDOM.render(
   <App />,
