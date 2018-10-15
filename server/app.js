@@ -26,11 +26,11 @@ io.on('connection', async (socket) => {
 
 		if (!game.white) {
 			game.white = auth.userId;
-			io.emit(auth.userId, {color: 'w', game: game.id}); 
+			io.emit(auth.userId, {type: 'SET_WHITE', game: game.id}); 
 		} else if (!game.black) {
 			game.black = auth.userId;
-			io.emit(auth.userId, {color: 'b', game: game.id}); 
-			io.emit(game.id, {move: 'start'}); 
+			io.emit(auth.userId, {type: 'SET_BLACK', game: game.id, whiteId: game.white }); 
+			io.emit(game.white, {move: 'START', blackId: game.black});
 			games[game.id] = game;
 			game = { id: guid(), white: null, black: null };
 		}

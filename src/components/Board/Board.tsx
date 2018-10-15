@@ -6,6 +6,8 @@ import { Piece } from '../../models/Piece';
 import * as classnames from "classnames";
 
 export interface IBoardProps {
+    game?: string;
+
     B_PAWNS: Long;
     B_ROOKS: Long;
     B_KNIGHTS: Long;
@@ -21,6 +23,7 @@ export interface IBoardProps {
     W_KING: Long;
 
     W_MOVE: boolean; //True - White, False - Black
+    P_WHITE?: boolean;
     
     B_CASTLING: boolean;
     W_CASTLING: boolean;
@@ -28,7 +31,6 @@ export interface IBoardProps {
     FUTURE_MOVES?: number[];
     CORONATE: number | null;
 
-    onInit?: (event: any) => void;
     onChangeView?: (event: any) => void;
     onSelectedPiece?: (event: any) => void;
     onDoMove?: (event: any) => void;
@@ -86,7 +88,6 @@ function Board(props: IBoardProps) {
                 </div>
             ) }
             <div className="actions">
-                <button onClick={props.onInit}>Init</button>
                 <button onClick={props.onChangeView}>Change</button>
             </div>
         </div>

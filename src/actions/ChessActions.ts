@@ -1,7 +1,8 @@
 import { IBoardProps } from '../components/Board/Board';
 
 export enum ChessActionType {
-    INIT = "INIT", 
+    SET_WHITE = "SET_WHITE", 
+    SET_BLACK = "SET_BLACK", 
     CHANGE_VIEW = "CHANGE_VIEW",
     SELECT_PIECE = "SELECT_PIECE",
     DO_MOVE = "DO_MOVE", 
@@ -12,9 +13,17 @@ export interface IAction {
     type: ChessActionType;
 }
 
-export function init(): IAction {
+export function setWhite(game: string): any {
     return {
-        type: ChessActionType.INIT
+        type: ChessActionType.SET_WHITE,
+        game: game
+    };
+}
+
+export function setBlack(game: string): any {
+    return {
+        type: ChessActionType.SET_BLACK,
+        game: game
     };
 }
 

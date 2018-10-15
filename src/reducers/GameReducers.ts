@@ -28,7 +28,9 @@ export interface IBoardPieces {
 }
 
 export interface IBoardState {
+    game?: string;
     W_MOVE: boolean; //True - White, False - Black
+    P_WHITE?: boolean;
     
     B_CASTLING: boolean;
     W_CASTLING: boolean;
@@ -97,7 +99,9 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
     let g = Game.instance();
 
     switch (action.type) {
-        case ChessActionType.INIT:
+        case ChessActionType.SET_WHITE:
+            return initBoardPieces();
+        case ChessActionType.SET_BLACK:
             return initBoardPieces();
         case ChessActionType.SELECT_PIECE:
             g.loadGame(action.board);
@@ -157,8 +161,18 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
 
 export function BoardStateReducer(state: IBoardState = initBoardState(), action: any): IBoardState {
     switch (action.type) {
-        case ChessActionType.INIT:
-            return initBoardState();
+        case ChessActionType.SET_WHITE:
+            return Object.assign({}, state, {
+                game: action.game,
+                P_WHITE: true,
+                W_VIEW: true
+            });
+        case ChessActionType.SET_BLACK:
+            return Object.assign({}, state, {
+                game: action.game,
+                P_WHITE: false,
+                W_VIEW: false
+            });
         case ChessActionType.CHANGE_VIEW:
             return Object.assign({}, state, {
                 W_VIEW: !state.W_VIEW
