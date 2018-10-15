@@ -5,8 +5,24 @@ import App from './App';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 
-const socket = io('https://chess-yas.herokuapp.com/');
-socket.on('chat', (message: string) => alert(message));
+function guid(): string {
+  function s4(): string {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+const socket = io('http://localhost:8080/');
+const userId = guid();
+socket.emit('auth', { userId: userId });
+socket.on(userId, (message: {color: string, game: string}) => {
+  console.log(message);
+  socket.on(message.game, (move: any) => {
+    console.log(move);
+  });
+});
 
 ReactDOM.render(
   <App />,
