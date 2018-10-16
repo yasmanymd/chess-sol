@@ -7,19 +7,19 @@ const mapStateToProps = (state: IBoardApp): IBoardProps => {
     return Object.assign({}, state.BoardPieces, state.BoardState);
 }
 
-const mapDispatchToProps = (dispatch: any, ownProps: any) => {
+const mapDispatchToProps = (dispatch: any) => {
     return {
         onChangeView: () => {
             dispatch(changeView());
         }, 
-        onSelectedPiece: (props: IBoardProps, position: number) => {
-            dispatch(selectPiece(props, position));
+        onSelectedPiece: (position: number) => {
+            dispatch(selectPiece(position));
         },
-        onDoMove: (props: IBoardProps, position: number) => {
-            dispatch(doMove(props, position));
+        onDoMove: (position: number) => {
+            dispatch(doMove(position));
         }, 
-        onCoronate: (props: IBoardProps, position: number, piece: string) => {
-            dispatch(coronate(props, position, piece))
+        onCoronate: (position: number, piece: string) => {
+            dispatch(coronate(position, piece))
         }
     };
 }

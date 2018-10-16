@@ -1,10 +1,10 @@
 import * as Long from 'long';
 import { Utils } from './GameUtils';
-import { IBoardProps } from '../components/Board/Board';
+import { IBoardPieces, IBoardState } from 'src/reducers/GameReducers';
 
 export interface IGameState {
     initGame(): void;
-    loadGame(board: IBoardProps): void;
+    loadGame(board: IBoardPieces, boardState: IBoardState): void;
     getIsWhiteMove(): boolean;
     setIsWhiteMove(isWhiteMove: boolean): void;
     getPiece(pos: number): string | null;
@@ -131,7 +131,7 @@ export class BitGameState implements IGameState {
         this.setIsWhiteMove(true);
     }
 
-    public loadGame(board: IBoardProps) {
+    public loadGame(board: IBoardPieces, boardState: IBoardState) {
         this.W_PAWNS = board.W_PAWNS;
         this.W_ROOKS = board.W_ROOKS;
         this.W_KNIGHTS = board.W_KNIGHTS;
@@ -146,10 +146,13 @@ export class BitGameState implements IGameState {
         this.B_QUEENS = board.B_QUEENS;
         this.B_KING = board.B_KING;
 
-        this.whiteCastling = +board.W_CASTLING;
-        this.blackCastling = +board.B_CASTLING;
+        this.whiteCastling = +boardState.W_CASTLING;
+        this.blackCastling = +boardState.B_CASTLING;
 
-        this.setIsWhiteMove(board.W_MOVE);
+        if (boardState.W_MOVE != null) {
+            this.setIsWhiteMove(boardState.W_MOVE);
+        }
+        
     }
 
     public static isWhite(piece: string): boolean | null {
@@ -211,7 +214,7 @@ export class BitGameState implements IGameState {
         return null; 
     }
 
-    public static getPiece(board: IBoardProps, position: number): string | undefined {
+    public static getPiece(board: IBoardPieces, position: number): string | undefined {
         var pos = Utils.longPos(position);
         if (board.W_PAWNS.and(pos).notEquals(0)) {
             return BitGameState.W_PAWNS_CHAR;

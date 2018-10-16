@@ -29,7 +29,9 @@ export interface IBoardPieces {
 
 export interface IBoardState {
     game?: string;
-    W_MOVE: boolean; //True - White, False - Black
+    whiteId?: string;
+    blackId?: string;
+    W_MOVE?: boolean; //True - White, False - Black
     P_WHITE?: boolean;
     
     B_CASTLING: boolean;
@@ -87,7 +89,6 @@ function initBoardState(): IBoardState {
     var init: IBoardState = {
       B_CASTLING: false,
       W_CASTLING: false,
-      W_MOVE: true,
       W_VIEW: true,
       CORONATE: null
     };
@@ -104,16 +105,19 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
         case ChessActionType.SET_BLACK:
             return initBoardPieces();
         case ChessActionType.SELECT_PIECE:
-            g.loadGame(action.board);
-            g.updateState(action.board.W_MOVE);
+            var s = action.state;
+            g.loadGame(s.BoardPieces, s.BoardState);
+            g.updateState(s.BoardState.W_MOVE);
             return Object.assign({}, state, {
                 SELECTED_POSITION: action.position,
                 FUTURE_MOVES: g.getFutureMove(action.position)
             });
         case ChessActionType.DO_MOVE:
-            g.loadGame(action.board);
-            g.updateState(action.board.W_MOVE);
-            g.move(action.board.SELECTED_POSITION, action.position);
+            var s = action.state;
+            g.loadGame(s.BoardPieces, s.BoardState);
+            g.updateState(s.BoardState.W_MOVE);
+            g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);
+            
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
                 B_ROOKS: g.B_ROOKS,
@@ -133,8 +137,9 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 FUTURE_MOVES: null
             });
         case ChessActionType.CORONATE:
-            g.loadGame(action.board);
-            g.updateState(action.board.W_MOVE);
+            var s = action.state;
+            g.loadGame(s.BoardPieces, s.BoardState);
+            g.updateState(s.BoardState.W_MOVE);
             g.setPiece(action.piece, action.position);
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
@@ -164,26 +169,36 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_WHITE:
             return Object.assign({}, state, {
                 game: action.game,
+                whiteId: action.whiteId,
                 P_WHITE: true,
                 W_VIEW: true
             });
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
                 game: action.game,
+                whiteId: action.whiteId,
+                blackId: action.blackId,
                 P_WHITE: false,
-                W_VIEW: false
+                W_VIEW: false,
+                W_MOVE: true
+            });
+        case ChessActionType.START:
+            return Object.assign({}, state, {
+                blackId: action.blackId,
+                W_MOVE: true
             });
         case ChessActionType.CHANGE_VIEW:
             return Object.assign({}, state, {
                 W_VIEW: !state.W_VIEW
             });
         case ChessActionType.DO_MOVE:
-            if ((action.position >= 56 && BitGameState.getPiece(action.board, action.board.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
-                (action.position <= 7 && BitGameState.getPiece(action.board, action.board.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR)) {
+            var s = action.state;
+            if ((action.position >= 56 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
+                (action.position <= 7 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR)) {
                 return Object.assign({}, state, {
                     CORONATE: action.position
                 });
-            }
+            }            
             return Object.assign({}, state, {
                 W_MOVE: !state.W_MOVE
             });

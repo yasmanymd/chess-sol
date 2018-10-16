@@ -7,6 +7,8 @@ import * as classnames from "classnames";
 
 export interface IBoardProps {
     game?: string;
+    whiteId?: string;
+    blackId?: string;
 
     B_PAWNS: Long;
     B_ROOKS: Long;
@@ -22,12 +24,13 @@ export interface IBoardProps {
     W_QUEENS: Long;
     W_KING: Long;
 
-    W_MOVE: boolean; //True - White, False - Black
+    W_MOVE?: boolean; //True - White, False - Black, null - no one
     P_WHITE?: boolean;
     
     B_CASTLING: boolean;
     W_CASTLING: boolean;
     W_VIEW: boolean; //True - White, False - Black
+    SELECTED_POSITION?: number;
     FUTURE_MOVES?: number[];
     CORONATE: number | null;
 
@@ -56,13 +59,17 @@ function Board(props: IBoardProps) {
                                         "f-move": props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0
                                     })
                                 };
-                                let onClick = (pieceChar && ((props.W_MOVE && pieceChar == pieceChar.toLowerCase()) || (!props.W_MOVE && pieceChar == pieceChar.toUpperCase()))) ? props.onSelectedPiece!.bind(null, props, cellNumber) : null;
-                                if (cellAttrs.className.includes("f-move")) {
-                                    onClick = props.onDoMove!.bind(null, props, cellNumber)
-                                }
-                                if (props.CORONATE) {
-                                    onClick = null;
-                                }
+                                let onClick = null;
+                                if (props.W_MOVE != null && props.W_MOVE === props.P_WHITE) {
+                                    onClick = (pieceChar && ((props.W_MOVE === true && pieceChar == pieceChar.toLowerCase()) || (props.W_MOVE === false && pieceChar == pieceChar.toUpperCase()))) ? props.onSelectedPiece!.bind(null, cellNumber) : null;
+
+                                    if (cellAttrs.className.includes("f-move")) {
+                                        onClick = props.onDoMove!.bind(null, cellNumber)
+                                    }
+                                    if (props.CORONATE) {
+                                        onClick = null;
+                                    }
+                                }                                
                                 return (
                                     <div key={cellNumber} {...cellAttrs} onClick={onClick} />
                                 );
