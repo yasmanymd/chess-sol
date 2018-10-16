@@ -4,7 +4,7 @@ const path = __dirname + '/app.js';
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-var port = process.env.PORT || 8081;
+var port = process.env.PORT || 8080;
 
 function guid() {
 	function s4() {
@@ -50,7 +50,13 @@ io.on('connection', async (socket) => {
 			game = { id: guid(), whiteId: null, blackId: null };
 		}
 	});
-})
+});
+
+app.use(express.static('build'));
+
+app.get('/', function(req, res) {
+	res.sendFile(__dirname + "/build/index.html");
+});
 
 server.listen(port, () => {
 	console.log("Backend Server is running on http://localhost:" + port);

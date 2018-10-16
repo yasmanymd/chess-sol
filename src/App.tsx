@@ -11,7 +11,7 @@ import thunk from 'redux-thunk';
 
 class App extends React.Component {
   public render() {
-    const socket = io('http://localhost:8081/');
+    const socket = io('https://chess-yas.herokuapp.com/');
     const store = createStore(
       BoardApp,
       applyMiddleware(thunk.withExtraArgument(socket))
@@ -49,8 +49,6 @@ class App extends React.Component {
             <BoardContainer />
           </Provider>
         </div>
-        
-        
       </div>
     );
   }
