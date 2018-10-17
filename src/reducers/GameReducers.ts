@@ -147,7 +147,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
             var s = action.state;
             g.loadGame(s.BoardPieces, s.BoardState);
             g.updateState(s.BoardState.W_MOVE);
-            g.move(s.BoardPieces.SELECTED_POSITION, action.position);
+            g.move(s.BoardPieces.SELECTED_POSITION || action.lastPosition, action.position);
             g.setPiece(action.piece, action.position);
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,

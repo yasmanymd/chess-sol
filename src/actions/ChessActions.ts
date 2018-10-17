@@ -70,7 +70,7 @@ export function doMove(position: number): any {
 export function coronate(position: number, piece: string): any {
     return (dispatch: any, getState: any, io: any) => {
         var state = getState();
-        io.emit(state.BoardState.game, { to: state.BoardState.P_WHITE ? state.BoardState.blackId : state.BoardState.whiteId, action: {type: ChessActionType.CORONATE, position: position, piece: piece } })
+        io.emit(state.BoardState.game, { to: state.BoardState.P_WHITE ? state.BoardState.blackId : state.BoardState.whiteId, action: {type: ChessActionType.CORONATE, lastPosition: state.BoardPieces.SELECTED_POSITION, position: position, piece: piece } })
         
         dispatch({
             type: ChessActionType.CORONATE,
