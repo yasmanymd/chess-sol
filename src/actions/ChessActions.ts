@@ -1,3 +1,5 @@
+import { BitGameState } from 'src/models/Game';
+
 export enum ChessActionType {
     SET_WHITE = "SET_WHITE", 
     SET_BLACK = "SET_BLACK", 
@@ -53,7 +55,10 @@ export function selectPiece(position: number): any {
 export function doMove(position: number): any {
     return (dispatch: any, getState: any, io: any) => {
         var state = getState();
-        io.emit(state.BoardState.game, { to: state.BoardState.P_WHITE ? state.BoardState.blackId : state.BoardState.whiteId, action: {type: ChessActionType.DO_MOVE, selected: state.BoardPieces.SELECTED_POSITION, position: position } });
+        if (!((position >= 56 && BitGameState.getPiece(state.BoardPieces, state.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
+            (position <= 7 && BitGameState.getPiece(state.BoardPieces, state.BoardPieces.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR))) {
+                io.emit(state.BoardState.game, { to: state.BoardState.P_WHITE ? state.BoardState.blackId : state.BoardState.whiteId, action: {type: ChessActionType.DO_MOVE, selected: state.BoardPieces.SELECTED_POSITION, position: position } });
+        }
         dispatch({
             type: ChessActionType.DO_MOVE,
             state: state,
@@ -63,13 +68,15 @@ export function doMove(position: number): any {
 }
 
 export function coronate(position: number, piece: string): any {
-    return (dispatch: any, getState: any) => {
+    return (dispatch: any, getState: any, io: any) => {
+        var state = getState();
+        io.emit(state.BoardState.game, { to: state.BoardState.P_WHITE ? state.BoardState.blackId : state.BoardState.whiteId, action: {type: ChessActionType.CORONATE, position: position, piece: piece } })
+        
         dispatch({
             type: ChessActionType.CORONATE,
-            state: getState(), 
+            state: state, 
             position: position,
             piece: piece
         });
-    };
+    }
 }
-

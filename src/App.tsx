@@ -29,13 +29,8 @@ class App extends React.Component {
     const userId = guid();
     socket.emit('auth', { userId: userId });
     socket.on(userId, (action: any) => {
-      if (action.type === "DO_MOVE") {
-        action.state = store.getState();
-        store.dispatch(action);
-      } else {
-        store.dispatch(action);
-      }
-      
+      action.state = store.getState();
+      store.dispatch(action);
     });
 
     return (

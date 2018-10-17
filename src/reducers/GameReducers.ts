@@ -66,19 +66,19 @@ function initBoardPieces(): IBoardPieces {
     var bPawns: Long = Long.fromInt(0);
     Utils.forEach(48, 55, (index: number) => { bPawns = bPawns.add(Utils.longPos(index)) });
     var init: IBoardPieces = {
-      B_PAWNS: bPawns,
-      B_ROOKS: Utils.longPos(56).add(Utils.longPos(63)),
-      B_KNIGHTS: Utils.longPos(57).add(Utils.longPos(62)),
-      B_BISHOPS: Utils.longPos(58).add(Utils.longPos(61)),
-      B_QUEENS: Utils.longPos(59),
-      B_KING: Utils.longPos(60),
+        B_PAWNS: bPawns,
+        B_ROOKS: Utils.longPos(56).add(Utils.longPos(63)),
+        B_KNIGHTS: Utils.longPos(57).add(Utils.longPos(62)),
+        B_BISHOPS: Utils.longPos(58).add(Utils.longPos(61)),
+        B_QUEENS: Utils.longPos(59),
+        B_KING: Utils.longPos(60),
 
-      W_PAWNS: wPawns,
-      W_ROOKS: Utils.longPos(0).add(Utils.longPos(7)),
-      W_KNIGHTS: Utils.longPos(1).add(Utils.longPos(6)),
-      W_BISHOPS: Utils.longPos(2).add(Utils.longPos(5)),
-      W_QUEENS: Utils.longPos(3),
-      W_KING: Utils.longPos(4)
+        W_PAWNS: wPawns,
+        W_ROOKS: Utils.longPos(0).add(Utils.longPos(7)),
+        W_KNIGHTS: Utils.longPos(1).add(Utils.longPos(6)),
+        W_BISHOPS: Utils.longPos(2).add(Utils.longPos(5)),
+        W_QUEENS: Utils.longPos(3),
+        W_KING: Utils.longPos(4)
     };
 
     return init;
@@ -140,6 +140,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
             var s = action.state;
             g.loadGame(s.BoardPieces, s.BoardState);
             g.updateState(s.BoardState.W_MOVE);
+            g.move(action.position >= 56 ? action.position - 8 : action.position + 8, action.position);
             g.setPiece(action.piece, action.position);
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
@@ -198,7 +199,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 return Object.assign({}, state, {
                     CORONATE: action.position
                 });
-            }            
+            }
             return Object.assign({}, state, {
                 W_MOVE: !state.W_MOVE
             });
