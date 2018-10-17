@@ -116,8 +116,15 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
             var s = action.state;
             g.loadGame(s.BoardPieces, s.BoardState);
             g.updateState(s.BoardState.W_MOVE);
+
+            var selectedPosition = null;
+            if ((action.position >= 56 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
+                (action.position <= 7 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR)) {
+                selectedPosition = s.BoardPieces.SELECTED_POSITION;
+            }
+
             g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);
-            
+
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
                 B_ROOKS: g.B_ROOKS,
@@ -133,14 +140,14 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 W_QUEENS: g.W_QUEENS,
                 W_KING: g.W_KING,
                 
-                SELECTED_POSITION: null,
+                SELECTED_POSITION: selectedPosition,
                 FUTURE_MOVES: null
             });
         case ChessActionType.CORONATE:
             var s = action.state;
             g.loadGame(s.BoardPieces, s.BoardState);
             g.updateState(s.BoardState.W_MOVE);
-            g.move(action.position >= 56 ? action.position - 8 : action.position + 8, action.position);
+            g.move(s.BoardPieces.SELECTED_POSITION, action.position);
             g.setPiece(action.piece, action.position);
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
