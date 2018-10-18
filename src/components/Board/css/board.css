@@ -17,7 +17,10 @@
     background-color: gray;
 }
 .f-move {
-    background-color: cyan;
+    background-color: lightskyblue !important;
+}
+.l-move {
+    background-color: lightblue;
 }
 .cor-pieces {
     display: flex;

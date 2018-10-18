@@ -31,6 +31,7 @@ export interface IBoardProps {
     W_CASTLING: boolean;
     W_VIEW: boolean; //True - White, False - Black
     SELECTED_POSITION?: number;
+    LAST_MOVE?: number[];
     FUTURE_MOVES?: number[];
     CORONATE: number | null;
 
@@ -56,7 +57,8 @@ function Board(props: IBoardProps) {
                                     className: classnames("cell", "c" + cellNumber, Piece.getClassName(pieceChar), {
                                         "dark": r%2 === c%2,
                                         "light": r%2 !== c%2,
-                                        "f-move": props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0
+                                        "f-move": props.FUTURE_MOVES && props.FUTURE_MOVES.filter((iterator) => iterator === cellNumber).length > 0,
+                                        "l-move": props.LAST_MOVE && props.LAST_MOVE.filter((iterator) => iterator === cellNumber).length > 0
                                     })
                                 };
                                 let onClick = null;

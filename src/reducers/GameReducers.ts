@@ -25,6 +25,7 @@ export interface IBoardPieces {
     W_KING: Long;
     FUTURE_MOVES?: number[];
     SELECTED_POSITION?: number;
+    LAST_MOVE?: number[];
 }
 
 export interface IBoardState {
@@ -118,9 +119,11 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
             g.updateState(s.BoardState.W_MOVE);
 
             var selectedPosition = null;
+            var includeLastMove = true;
             if ((action.position >= 56 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
                 (action.position <= 7 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR)) {
                 selectedPosition = s.BoardPieces.SELECTED_POSITION;
+                includeLastMove = false;
             }
 
             g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);
@@ -142,7 +145,8 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 
                 SELECTED_POSITION: selectedPosition,
                 FUTURE_MOVES: null
-            });
+            }, 
+            includeLastMove ? {LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.selected, action.position]} : {});
         case ChessActionType.CORONATE:
             var s = action.state;
             g.loadGame(s.BoardPieces, s.BoardState);
@@ -165,6 +169,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 W_KING: g.W_KING,
                 
                 SELECTED_POSITION: null,
+                LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.lastPosition, action.position],
                 FUTURE_MOVES: null
             });
         default:
