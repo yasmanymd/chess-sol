@@ -15,17 +15,17 @@ function guid() {
 	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
   }
 
-var game = { id: guid(), whiteId: null, blackId: null };
+var game = { id: guid(), whitePlayer: null, blackPlayer: null };
 var games = [];
 
 io.set('origins', '*:*');
 io.on('connection', async (socket) => {
-	socket.on('auth', (auth) => { 
-
-		if (!game.whiteId) {
-			console.log('white: ' + auth.userId);
-			game.whiteId = auth.userId;
-			io.emit(auth.userId, {type: 'SET_WHITE', game: game.id, whiteId: game.whiteId }); 
+	socket.on('auth', (player) => { 
+		console.log(player);
+		if (!game.whitePlayer) {
+			console.log('white: ' + player.Id);
+			game.whitePlayer = player;
+			io.emit(player.Id, {type: 'SET_WHITE', game: game.id, whitePlayer: player }); 
 
 			console.log('listening game ' + game.id);
 			socket.on(game.id, (message) => {
@@ -33,11 +33,11 @@ io.on('connection', async (socket) => {
 				console.log(message);
 				io.emit(message.to, message.action);
 			});
-		} else if (!game.blackId) {
-			console.log('black: ' + auth.userId);
-			game.blackId = auth.userId;
-			io.emit(auth.userId, {type: 'SET_BLACK', game: game.id, whiteId: game.whiteId, blackId: game.blackId }); 
-			io.emit(game.whiteId, {type: 'START', blackId: game.blackId});
+		} else if (!game.blackPlayer) {
+			console.log('black: ' + player.Id);
+			game.blackPlayer = player;
+			io.emit(player.Id, {type: 'SET_BLACK', game: game.id, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer }); 
+			io.emit(game.whitePlayer.Id, {type: 'START', blackPlayer: game.blackPlayer});
 
 			console.log('listening game ' + game.id);
 			socket.on(game.id, (message) => {
@@ -47,7 +47,7 @@ io.on('connection', async (socket) => {
 			});
 			
 			games[game.id] = game;
-			game = { id: guid(), whiteId: null, blackId: null };
+			game = { id: guid(), whitePlayer: null, blackPlayer: null };
 		}
 	});
 });

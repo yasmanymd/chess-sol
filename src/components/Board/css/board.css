@@ -1,8 +1,15 @@
+.room {
+    display: flex;
+    flex-direction: row;
+}
 .board {
     border: solid 2px black;
     display: flex;
     flex-direction: column;
     width: fit-content;
+}
+.check {
+    border: solid 2px crimson !important;
 }
 .row {
     display: flex; 

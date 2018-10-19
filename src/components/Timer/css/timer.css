@@ -1,0 +1,13 @@
+.info {
+    display: flex;
+    align-content: space-between;
+    height: 420px;
+    width: 80px;
+    margin-left: 10px;
+}
+.w-view {
+    flex-wrap: wrap-reverse;
+}
+.b-view {
+    flex-wrap: wrap;
+}

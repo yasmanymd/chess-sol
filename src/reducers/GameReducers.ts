@@ -3,6 +3,7 @@ import { ChessActionType } from '../actions/ChessActions';
 import { combineReducers } from 'redux';
 import { Utils } from '../models/GameUtils';
 import { Game, BitGameState } from '../models/Game';
+import { Player } from 'src/models/Player';
 
 export interface IBoardApp {
     BoardPieces: IBoardPieces, 
@@ -26,12 +27,13 @@ export interface IBoardPieces {
     FUTURE_MOVES?: number[];
     SELECTED_POSITION?: number;
     LAST_MOVE?: number[];
+    isCheck?: boolean;
 }
 
 export interface IBoardState {
     game?: string;
-    whiteId?: string;
-    blackId?: string;
+    whitePlayer?: Player;
+    blackPlayer?: Player;
     W_MOVE?: boolean; //True - White, False - Black
     P_WHITE?: boolean;
     
@@ -39,6 +41,7 @@ export interface IBoardState {
     W_CASTLING: boolean;
     W_VIEW: boolean; //True - White, False - Black
     CORONATE: number | null;
+    GAME_OVER?: number;
 }
 
 function createBoardPieces(): IBoardPieces {
@@ -97,6 +100,20 @@ function initBoardState(): IBoardState {
     return init;
 }
 
+function checkGameOver(state: any): number | null {
+    let g = Game.instance();
+    if (g.isCheckMate(!state.BoardState.W_MOVE)) {
+        return 1;
+    }
+    if (g.isCheckMate(state.BoardState.W_MOVE)) {
+        return 2;
+    }
+    if (g.isTable(!state.BoardState.W_MOVE)) {
+        return 3;
+    }
+    return null;
+}
+
 export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), action: any): IBoardPieces {
     let g = Game.instance();
 
@@ -126,7 +143,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 includeLastMove = false;
             }
 
-            g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);
+            g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);            
 
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
@@ -144,7 +161,9 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 W_KING: g.W_KING,
                 
                 SELECTED_POSITION: selectedPosition,
-                FUTURE_MOVES: null
+                FUTURE_MOVES: null,
+                isCheck: g.isCheck(!s.BoardState.W_MOVE),
+                GAME_OVER: checkGameOver(s)
             }, 
             includeLastMove ? {LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.selected, action.position]} : {});
         case ChessActionType.CORONATE:
@@ -170,7 +189,8 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 
                 SELECTED_POSITION: null,
                 LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.lastPosition, action.position],
-                FUTURE_MOVES: null
+                FUTURE_MOVES: null,
+                isCheck: g.isCheck(!s.BoardState.W_MOVE)
             });
         default:
             return state;
@@ -182,22 +202,22 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_WHITE:
             return Object.assign({}, state, {
                 game: action.game,
-                whiteId: action.whiteId,
+                whitePlayer: action.whitePlayer,
                 P_WHITE: true,
                 W_VIEW: true
             });
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
                 game: action.game,
-                whiteId: action.whiteId,
-                blackId: action.blackId,
+                whitePlayer: action.whitePlayer,
+                blackPlayer: action.blackPlayer,
                 P_WHITE: false,
                 W_VIEW: false,
                 W_MOVE: true
             });
         case ChessActionType.START:
             return Object.assign({}, state, {
-                blackId: action.blackId,
+                blackPlayer: action.blackPlayer,
                 W_MOVE: true
             });
         case ChessActionType.CHANGE_VIEW:
@@ -212,13 +232,23 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                     CORONATE: action.position
                 });
             }
+            var isGameOver = checkGameOver(s);
             return Object.assign({}, state, {
-                W_MOVE: !state.W_MOVE
+                W_MOVE: !isGameOver ? !state.W_MOVE : null,
+                GAME_OVER: isGameOver
             });
         case ChessActionType.CORONATE:
+            var s = action.state;
+            var isGameOver = checkGameOver(s);
             return Object.assign({}, state, {
                 CORONATE: null,
-                W_MOVE: !state.W_MOVE
+                W_MOVE: !isGameOver ? !state.W_MOVE : null,
+                GAME_OVER: isGameOver
+            });
+        case ChessActionType.GAME_OVER:
+            return Object.assign({}, state, {
+                GAME_OVER: action.reason,
+                W_MOVE: null
             });
         default:
             return state;
