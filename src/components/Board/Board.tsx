@@ -117,7 +117,7 @@ function Board(props: IBoardProps) {
                 )}
             </div>
             <div>
-            <Timer whiteSeconds={10} blackSeconds={10} whitePlayer={props.whitePlayer} blackPlayer={props.blackPlayer} whiteMove={props.W_MOVE} whiteView={props.W_VIEW} onTimeout={props.onTimeout!.bind(null, props.W_MOVE === true ? 5 : 4)} />
+            <Timer whiteSeconds={300} blackSeconds={300} whitePlayer={props.whitePlayer} blackPlayer={props.blackPlayer} whiteMove={props.W_MOVE} whiteView={props.W_VIEW} onTimeout={props.onTimeout!.bind(null, props.W_MOVE === true ? 5 : 4)} />
             </div>
         </div>
     );
