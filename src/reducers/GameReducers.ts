@@ -32,6 +32,7 @@ export interface IBoardPieces {
 
 export interface IBoardState {
     game?: string;
+    time?: number;
     whitePlayer?: Player;
     blackPlayer?: Player;
     W_MOVE?: boolean; //True - White, False - Black
@@ -202,6 +203,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_WHITE:
             return Object.assign({}, state, {
                 game: action.game,
+                time: action.time,
                 whitePlayer: action.whitePlayer,
                 P_WHITE: true,
                 W_VIEW: true
@@ -209,6 +211,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
                 game: action.game,
+                time: action.time,
                 whitePlayer: action.whitePlayer,
                 blackPlayer: action.blackPlayer,
                 P_WHITE: false,

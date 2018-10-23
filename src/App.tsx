@@ -14,13 +14,18 @@ class App extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
 
-    this.state = { name: '', inputValue: '' };
+    this.state = { name: '', inputValue: '', time: null };
     this.onClick = this.onClick.bind(this);
     this.updateInput = this.updateInput.bind(this);
+    this.updateTime = this.updateTime.bind(this);
   }
 
   updateInput(e: any) {
     this.setState({ inputValue: e.target.value });
+  }
+
+  updateTime(e: any) {
+    this.setState({ time: e.target.value });
   }
 
   onClick() {
@@ -37,6 +42,11 @@ class App extends React.Component<any, any> {
           </header>
           <div className="App-intro">
             <input type="text" onChange={this.updateInput} />
+            <select onChange={this.updateTime}>
+              <option selected value="300">5 min</option>
+              <option value="420">7 min</option>
+              <option value="600">10 min</option>
+            </select>             
             <button onClick={this.onClick}>Submit</button>
           </div>
         </div>
@@ -58,7 +68,7 @@ class App extends React.Component<any, any> {
       return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
     
-    const player = new Player(guid(), this.state.name);
+    const player = new Player(guid(), this.state.name, this.state.time);
     socket.emit('auth', player);
     socket.on(player.Id, (action: any) => {
       action.state = store.getState();

@@ -9,6 +9,7 @@ import { Player } from 'src/models/Player';
 
 export interface IBoardProps {
     game?: string;
+    time?:number;
     whitePlayer?: Player;
     blackPlayer?: Player;
 
@@ -117,7 +118,7 @@ function Board(props: IBoardProps) {
                 )}
             </div>
             <div>
-            <Timer whiteSeconds={300} blackSeconds={300} whitePlayer={props.whitePlayer} blackPlayer={props.blackPlayer} whiteMove={props.W_MOVE} whiteView={props.W_VIEW} onTimeout={props.onTimeout!.bind(null, props.W_MOVE === true ? 5 : 4)} />
+            <Timer whiteSeconds={props.time || 300} blackSeconds={props.time || 300} whitePlayer={props.whitePlayer} blackPlayer={props.blackPlayer} whiteMove={props.W_MOVE} whiteView={props.W_VIEW} onTimeout={props.onTimeout!.bind(null, props.W_MOVE === true ? 5 : 4)} />
             </div>
         </div>
     );

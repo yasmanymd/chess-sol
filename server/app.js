@@ -25,7 +25,7 @@ io.on('connection', async (socket) => {
 		if (!game.whitePlayer) {
 			console.log('white: ' + player.Id);
 			game.whitePlayer = player;
-			io.emit(player.Id, {type: 'SET_WHITE', game: game.id, whitePlayer: player }); 
+			io.emit(player.Id, {type: 'SET_WHITE', game: game.id, whitePlayer: player, time: game.whitePlayer.Time }); 
 
 			console.log('listening game ' + game.id);
 			socket.on(game.id, (message) => {
@@ -36,7 +36,7 @@ io.on('connection', async (socket) => {
 		} else if (!game.blackPlayer) {
 			console.log('black: ' + player.Id);
 			game.blackPlayer = player;
-			io.emit(player.Id, {type: 'SET_BLACK', game: game.id, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer }); 
+			io.emit(player.Id, {type: 'SET_BLACK', game: game.id, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.whitePlayer.Time }); 
 			io.emit(game.whitePlayer.Id, {type: 'START', blackPlayer: game.blackPlayer});
 
 			console.log('listening game ' + game.id);
