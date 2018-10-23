@@ -203,7 +203,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_WHITE:
             return Object.assign({}, state, {
                 game: action.game,
-                time: action.time,
+                time: action.time*1,
                 whitePlayer: action.whitePlayer,
                 P_WHITE: true,
                 W_VIEW: true
@@ -211,7 +211,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
                 game: action.game,
-                time: action.time,
+                time: action.time*1,
                 whitePlayer: action.whitePlayer,
                 blackPlayer: action.blackPlayer,
                 P_WHITE: false,
