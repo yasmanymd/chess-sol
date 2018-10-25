@@ -1,63 +1,54 @@
-const express = require("express");
-const app = express();
-const path = __dirname + '/app.js';
+/**
+ * app.js
+ *
+ * Use `app.js` to run your app without `sails lift`.
+ * To start the server, run: `node app.js`.
+ *
+ * This is handy in situations where the sails CLI is not relevant or useful,
+ * such as when you deploy to a server, or a PaaS like Heroku.
+ *
+ * For example:
+ *   => `node app.js`
+ *   => `npm start`
+ *   => `forever start app.js`
+ *   => `node debug app.js`
+ *
+ * The same command-line arguments and env vars are supported, e.g.:
+ * `NODE_ENV=production node app.js --port=80 --verbose`
+ *
+ * For more information see:
+ *   https://sailsjs.com/anatomy/app.js
+ */
 
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
-var port = process.env.PORT || 8080;
 
-function guid() {
-	function s4() {
-	  return Math.floor((1 + Math.random()) * 0x10000)
-		.toString(16)
-		.substring(1);
-	}
-	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-  }
+// Ensure we're in the project directory, so cwd-relative paths work as expected
+// no matter where we actually lift from.
+// > Note: This is not required in order to lift, but it is a convenient default.
+process.chdir(__dirname);
 
-var game = { id: guid(), whitePlayer: null, blackPlayer: null };
-var games = [];
 
-io.set('origins', '*:*');
-io.on('connection', async (socket) => {
-	socket.on('auth', (player) => { 
-		console.log(player);
-		if (!game.whitePlayer) {
-			console.log('white: ' + player.Id);
-			game.whitePlayer = player;
-			io.emit(player.Id, {type: 'SET_WHITE', game: game.id, whitePlayer: player, time: game.whitePlayer.Time }); 
 
-			console.log('listening game ' + game.id);
-			socket.on(game.id, (message) => {
-				console.log('sending to ' + message.to);
-				console.log(message);
-				io.emit(message.to, message.action);
-			});
-		} else if (!game.blackPlayer) {
-			console.log('black: ' + player.Id);
-			game.blackPlayer = player;
-			io.emit(player.Id, {type: 'SET_BLACK', game: game.id, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.whitePlayer.Time }); 
-			io.emit(game.whitePlayer.Id, {type: 'START', blackPlayer: game.blackPlayer});
+// Attempt to import `sails` dependency, as well as `rc` (for loading `.sailsrc` files).
+var sails;
+var rc;
+try {
+  sails = require('sails');
+  rc = require('sails/accessible/rc');
+} catch (err) {
+  console.error('Encountered an error when attempting to require(\'sails\'):');
+  console.error(err.stack);
+  console.error('--');
+  console.error('To run an app using `node app.js`, you need to have Sails installed');
+  console.error('locally (`./node_modules/sails`).  To do that, just make sure you\'re');
+  console.error('in the same directory as your app and run `npm install`.');
+  console.error();
+  console.error('If Sails is installed globally (i.e. `npm install -g sails`) you can');
+  console.error('also run this app with `sails lift`.  Running with `sails lift` will');
+  console.error('not run this file (`app.js`), but it will do exactly the same thing.');
+  console.error('(It even uses your app directory\'s local Sails install, if possible.)');
+  return;
+}//-•
 
-			console.log('listening game ' + game.id);
-			socket.on(game.id, (message) => {
-				console.log('sending to ' + message.to);
-				console.log(message);
-				io.emit(message.to, message.action);
-			});
-			
-			games[game.id] = game;
-			game = { id: guid(), whitePlayer: null, blackPlayer: null };
-		}
-	});
-});
 
-app.use(express.static('build'));
-
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + "/build/index.html");
-});
-
-server.listen(port, () => {
-	console.log("Backend Server is running on http://localhost:" + port);
-});
+// Start server
+sails.lift(rc('sails'));

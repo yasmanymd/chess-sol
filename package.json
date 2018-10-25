@@ -20,11 +20,11 @@
     "socket.io-client": "^2.1.1"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
+    "start": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js start",
     "postinstall": "npm run-script build", 
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "build": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js build",
+    "test": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js test --env=jsdom",
+    "eject": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js eject"
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",
