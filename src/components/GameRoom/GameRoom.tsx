@@ -14,6 +14,7 @@ export interface IGameRoomState {
 export interface IGameRoomProps {
     socket: any; 
     player: Player;
+    onActionReceived: (action: any) => void;
 }
 
 export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
@@ -52,7 +53,11 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                 whitePlayer: this.state.colorPiece === 'w' ? this.props.player.name : undefined, 
                 blackPlayer: this.state.colorPiece !== 'w' ? this.props.player.name : undefined, 
                 time: this.state.time 
-            }, (response: any, body: any) => {})
+            }, (response: any, body: any) => {
+                if (this.props.onActionReceived) {
+                    this.props.onActionReceived(response);
+                }
+            })
         }
     }
 

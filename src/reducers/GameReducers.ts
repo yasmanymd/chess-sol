@@ -205,8 +205,10 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 game: action.game,
                 time: action.time*1,
                 whitePlayer: action.whitePlayer,
+                blackPlayer: action.blackPlayer,
                 P_WHITE: true,
-                W_VIEW: true
+                W_VIEW: true,
+                W_MOVE: false
             });
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
@@ -216,11 +218,10 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 blackPlayer: action.blackPlayer,
                 P_WHITE: false,
                 W_VIEW: false,
-                W_MOVE: true
+                W_MOVE: false
             });
         case ChessActionType.START:
             return Object.assign({}, state, {
-                blackPlayer: action.blackPlayer,
                 W_MOVE: true
             });
         case ChessActionType.CHANGE_VIEW:

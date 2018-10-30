@@ -16,27 +16,31 @@ export interface IAction {
     type: ChessActionType;
 }
 
-export function setWhite(game: string, time?: number): any {
+export function setWhite(game: string, title: string, whitePlayer: Player, blackPlayer: Player, time: number): any {
     return {
         type: ChessActionType.SET_WHITE,
         game: game,
+        title: title, 
+        whitePlayer: whitePlayer,
+        blackPlayer: blackPlayer,
         time: time
     };
 }
 
-export function setBlack(game: string, whitePlayer: Player, time?: number): any {
+export function setBlack(game: string, title: string, whitePlayer: Player, blackPlayer: Player, time: number): any {
     return {
         type: ChessActionType.SET_BLACK,
         game: game,
+        title: title, 
         whitePlayer: whitePlayer,
+        blackPlayer: blackPlayer,
         time: time
     };
 }
 
-export function start(blackPlayer: Player): any {
+export function start(): any {
     return {
-        type: ChessActionType.START, 
-        blackPlayer: blackPlayer
+        type: ChessActionType.START
     };
 }
 

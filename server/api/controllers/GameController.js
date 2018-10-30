@@ -21,14 +21,16 @@ module.exports = {
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
         }
 
+        let id = guid();
+
         try {
-            let game = await Game.create({id:guid(), title: req.body.title,  whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
-			Game.publish(['game'], game);
+            let game = await Game.create({id:id, title: req.body.title,  whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
+			Game.publish(['game'], game, req);
 		} catch(err) {
 			return res.serverError(err);
 		}
 
-        return res.ok();
+        return res.ok({type: req.body.whitePlayer != undefined ? 'SET_WHITE' : 'SET_BLACK', game: id, title: req.body.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
     }, 
 
     subscribe: async (req, res) => {

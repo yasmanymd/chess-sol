@@ -8,14 +8,5 @@
  * http://github.com/frostme/sails-seed
  */
 module.exports.seeds = {
-    game: [
-        {
-            id: '1',
-            whitePlayer: 'Yasmany'
-        },
-        {
-            id: '2',
-            whitePlayer: 'Marien'
-        }
-    ]
+    
 }

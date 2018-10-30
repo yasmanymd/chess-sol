@@ -31,6 +31,7 @@ class App extends React.Component<any, IAppState> {
 
     this.state = { player: undefined, game: undefined };
     this.onSetName = this.onSetName.bind(this);
+    this.onActionReceived = this.onActionReceived.bind(this);
   }
 
   private guid(): string {
@@ -58,6 +59,12 @@ class App extends React.Component<any, IAppState> {
     });
   }
 
+  onActionReceived(action: any) {
+    action.state = this.store.getState();
+    this.store.dispatch(action);
+    this.setState({game: action.game});
+  }
+
   public render() {
     return (
       <div className="App">
@@ -66,7 +73,7 @@ class App extends React.Component<any, IAppState> {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         {this.state.player == undefined && (<Lobby onSetName={this.onSetName}></Lobby>)}
-        {this.state.player != undefined && this.state.game == undefined && (<GameRoom socket={this.socket} player={this.state.player} ></GameRoom>)}
+        {this.state.player != undefined && this.state.game == undefined && (<GameRoom socket={this.socket} player={this.state.player} onActionReceived={this.onActionReceived} ></GameRoom>)}
         {this.state.player != undefined && this.state.game != undefined && (
           <div className="App-intro">
             <Provider store={this.store}>
