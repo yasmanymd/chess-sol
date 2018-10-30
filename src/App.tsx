@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as io from 'socket.io-client';
 import './App.css';
 
 import logo from './logo.svg';
@@ -9,83 +8,72 @@ import { Provider } from 'react-redux';
 import BoardContainer from './containers/BoardContainer';
 import thunk from 'redux-thunk';
 import { Player } from './models/Player';
+import { Lobby } from './components/Lobby/Lobby';
+import { GameRoom } from './components/GameRoom/GameRoom';
 
-class App extends React.Component<any, any> {
+interface IAppState {
+  player: Player | undefined;
+  game: any | undefined;
+}
+
+class App extends React.Component<any, IAppState> {
+  socket: any;
+  store: any;
+  
   constructor(props: any) {
     super(props);
 
-    this.state = { name: '', inputValue: '', time: null };
-    this.onClick = this.onClick.bind(this);
-    this.updateInput = this.updateInput.bind(this);
-    this.updateTime = this.updateTime.bind(this);
-  }
-
-  updateInput(e: any) {
-    this.setState({ inputValue: e.target.value });
-  }
-
-  updateTime(e: any) {
-    this.setState({ time: e.target.value });
-  }
-
-  onClick() {
-    this.setState({ name: this.state.inputValue });
-  }
-
-  public render() {
-    if (this.state.name === ''){
-      return (
-        <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h1 className="App-title">Welcome to React</h1>
-          </header>
-          <div className="App-intro">
-            <input type="text" onChange={this.updateInput} />
-            <select onChange={this.updateTime}>
-              <option selected value="300">5 min</option>
-              <option value="420">7 min</option>
-              <option value="600">10 min</option>
-            </select>             
-            <button onClick={this.onClick}>Submit</button>
-          </div>
-        </div>
-      );
-    }
-
-    const socket = io('https://chess-yas.herokuapp.com/');
-    const store = createStore(
+    this.socket = window['io'].socket;
+    this.store = createStore(
       BoardApp,
-      applyMiddleware(thunk.withExtraArgument(socket))
+      applyMiddleware(thunk.withExtraArgument(this.socket))
     );
 
-    function guid(): string {
-      function s4(): string {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-      }
-      return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    this.state = { player: undefined, game: undefined };
+    this.onSetName = this.onSetName.bind(this);
+  }
+
+  private guid(): string {
+    function s4(): string {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
     }
-    
-    const player = new Player(guid(), this.state.name, this.state.time);
-    socket.emit('auth', player);
-    socket.on(player.Id, (action: any) => {
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  }
+
+  onSetName(name: string) {
+    let player = new Player(this.guid(), name);
+    this.setState({ player: player });
+
+    this.socket.post('/setPlayer', player);
+    this.socket.on('games', () => {
+
+    });
+
+    let store = this.store;
+    this.socket.on(player.id, (action: any) => {
       action.state = store.getState();
       store.dispatch(action);
     });
+  }
 
+  public render() {
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
         </header>
-        <div className="App-intro">
-          <Provider store={store}>
-            <BoardContainer />
-          </Provider>
-        </div>
+        {this.state.player == undefined && (<Lobby onSetName={this.onSetName}></Lobby>)}
+        {this.state.player != undefined && this.state.game == undefined && (<GameRoom socket={this.socket} player={this.state.player} ></GameRoom>)}
+        {this.state.player != undefined && this.state.game != undefined && (
+          <div className="App-intro">
+            <Provider store={this.store}>
+              <BoardContainer />
+            </Provider>
+          </div>
+        )}        
       </div>
     );
   }

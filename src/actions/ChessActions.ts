@@ -1,4 +1,4 @@
-import { BitGameState } from 'src/models/Game';
+import { BitGameState } from 'src/models/GameClient';
 import { Player } from 'src/models/Player';
 
 export enum ChessActionType {

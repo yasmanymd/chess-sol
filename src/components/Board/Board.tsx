@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './css/board.css';
 import { Utils } from '../../models/GameUtils';
-import { BitGameState } from '../../models/Game';
+import { BitGameState } from '../../models/GameClient';
 import { Piece } from '../../models/Piece';
 import * as classnames from "classnames";
 import { Timer } from '../Timer/Timer';

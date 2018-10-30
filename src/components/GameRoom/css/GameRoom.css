@@ -1,0 +1,14 @@
+.game-room {
+    display: flex;
+    flex-direction: row;
+}
+
+.game-new {
+    width: 300px;
+}
+
+.game-list {
+    display: flex;
+    flex-flow: wrap;
+    width: calc(100% - 300px);
+}

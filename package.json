@@ -18,7 +18,7 @@
     "redux": "^4.0.0",
     "socket.io": "^2.1.1",
     "socket.io-client": "^2.1.1"
-  },
+  }, 
   "scripts": {
     "start": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js start",
     "postinstall": "npm run-script build", 

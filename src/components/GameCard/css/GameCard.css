@@ -1,0 +1,10 @@
+.card {
+    width: 200px;
+    padding: 10px;
+    margin: 2px;
+    border: solid 1px black;
+}
+
+.card:hover {
+    background-color: goldenrod;
+}

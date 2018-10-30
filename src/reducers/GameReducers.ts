@@ -2,7 +2,7 @@ import * as Long from 'long';
 import { ChessActionType } from '../actions/ChessActions';
 import { combineReducers } from 'redux';
 import { Utils } from '../models/GameUtils';
-import { Game, BitGameState } from '../models/Game';
+import { GameClient, BitGameState } from '../models/GameClient';
 import { Player } from 'src/models/Player';
 
 export interface IBoardApp {
@@ -102,7 +102,7 @@ function initBoardState(): IBoardState {
 }
 
 function checkGameOver(state: any): number | null {
-    let g = Game.instance();
+    let g = GameClient.instance();
     if (g.isCheckMate(!state.BoardState.W_MOVE)) {
         return 1;
     }
@@ -116,7 +116,7 @@ function checkGameOver(state: any): number | null {
 }
 
 export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), action: any): IBoardPieces {
-    let g = Game.instance();
+    let g = GameClient.instance();
 
     switch (action.type) {
         case ChessActionType.SET_WHITE:
