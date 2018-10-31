@@ -32,6 +32,9 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     componentDidMount() {
         const socket = this.props.socket;
         let self = this;
+        socket.get('/game', (games: Game[]) => {
+            self.setState({ games: games});
+        });
         socket.post('/subscribe', {event: 'game'}, () => {
             socket.on('game', () => {
                 socket.get('/game', (games: Game[]) => {
@@ -84,7 +87,7 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                     p.socket.on(game.id, (action: any) => {
                         p.onActionReceived(action);
                     });
-                    p.socket.post('/executeall', {game: game.id, action: {type: 'START', whitePlayer: response.whitePlayer, blackPlayer: response.blackPlayer}});
+                    p.socket.post('/execute', {game: game.id, action: {type: 'START', whitePlayer: response.whitePlayer, blackPlayer: response.blackPlayer}});
                 });
             }
         });
@@ -118,7 +121,7 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                             onChange={this.onColorChanged} />Black
                     </div> 
                     <div>Time: 
-                    <select onChange={this.onTimeChanged} value="300">
+                    <select onChange={this.onTimeChanged} value={this.state.time}>
                         <option value="300">5 min</option>
                         <option value="420">7 min</option>
                         <option value="600">10 min</option>

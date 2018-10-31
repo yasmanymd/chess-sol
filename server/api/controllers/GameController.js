@@ -86,21 +86,7 @@ module.exports = {
         return res.ok();
     }, 
 
-    executeAll: async (req, res) => {
-        if (!req.isSocket) {
-            return res.badRequest();
-        }
-
-        try {
-			sails.io.sockets.emit(req.body.game, req.body.action);
-		} catch(err) {
-			return res.serverError(err);
-        }
-
-        return res.ok();
-    },
-
-    executeExceptMe: async (req, res) => {
+    execute: async (req, res) => {
         if (!req.isSocket) {
             return res.badRequest();
         }
@@ -113,5 +99,4 @@ module.exports = {
 
         return res.ok();
     }
-
 };

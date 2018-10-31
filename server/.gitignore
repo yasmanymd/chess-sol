@@ -131,3 +131,10 @@ lib-cov
 *.out
 *.pid
 
+assets/asset-manifest.json
+assets/index.html
+assets/manifest.json
+assets/service-worker.js
+assets/**/main.*.*
+assets/**/logo.*.*
+assets/favicon.ico

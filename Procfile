@@ -1,1 +1,1 @@
-web: node ./server/app.js
+web: SET REACT_APP_SERVER_URL=https://chess-yas.herokuapp.com/&&npm run-script build && cd server && sails lift

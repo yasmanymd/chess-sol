@@ -66,6 +66,5 @@ module.exports.routes = {
   'POST /subscribe': { controller: 'GameController', action: 'subscribe' },
   'POST /unsubscribe': { controller: 'GameController', action: 'unsubscribe' },
   'POST /joingame': { controller: 'GameController', action: 'joinGame' },
-  'POST /executeall': { controller: 'GameController', action: 'executeAll' },
-  'POST /executeexceptme': { controller: 'GameController', action: 'executeExceptMe' }
+  'POST /execute': { controller: 'GameController', action: 'execute' }
 };

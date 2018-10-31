@@ -66,38 +66,23 @@ export function doMove(position: number): any {
         var state = getState();
         if (!((position >= 56 && BitGameState.getPiece(state.BoardPieces, state.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
             (position <= 7 && BitGameState.getPiece(state.BoardPieces, state.BoardPieces.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR))) {
-                socket.post('/executeexceptme', {game: state.BoardState.game, action: {type: ChessActionType.DO_MOVE, selected: state.BoardPieces.SELECTED_POSITION, position: position } });
-        }
-        dispatch({
-            type: ChessActionType.DO_MOVE,
-            state: state,
-            position: position
-        });
+                socket.post('/execute', {game: state.BoardState.game, action: {type: ChessActionType.DO_MOVE, selected: state.BoardPieces.SELECTED_POSITION, position: position } });
+        }        
     }
 }
 
 export function coronate(position: number, piece: string): any {
     return (dispatch: any, getState: any, socket: any) => {
         var state = getState();
-        socket.post('/executeexceptme', {game: state.BoardState.game, action: {type: ChessActionType.CORONATE, lastPosition: state.BoardPieces.SELECTED_POSITION, position: position, piece: piece } });
+        socket.post('/execute', {game: state.BoardState.game, action: {type: ChessActionType.CORONATE, lastPosition: state.BoardPieces.SELECTED_POSITION, position: position, piece: piece } });
         
-        dispatch({
-            type: ChessActionType.CORONATE,
-            state: state, 
-            position: position,
-            piece: piece
-        });
     }
 }
 
 export function gameOver(reason: number) {
     return (dispatch: any, getState: any, socket: any) => {
         var state = getState();
-        socket.post('/executeexceptme', {game: state.BoardState.game, action: {type: ChessActionType.GAME_OVER, reason: reason } });
+        socket.post('/execute', {game: state.BoardState.game, action: {type: ChessActionType.GAME_OVER, reason: reason } });
         
-        dispatch({
-            type: ChessActionType.GAME_OVER,
-            reason: reason
-        });
     }
 }

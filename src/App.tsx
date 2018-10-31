@@ -28,7 +28,7 @@ class App extends React.Component<any, IAppState> {
       applyMiddleware(thunk.withExtraArgument(this.socket))
     );
 
-    this.state = { player: 'yas', game: undefined };
+    this.state = { player: undefined, game: undefined };
     this.onSetName = this.onSetName.bind(this);
     this.onActionReceived = this.onActionReceived.bind(this);
   }
