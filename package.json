@@ -23,7 +23,7 @@
     "start": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js start",
     "postinstall": "npm run-script build",
     "build": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js build",
-    "postbuild": "./postbuild.sh",
+    "postbuild": "bash ./postbuild.sh",
     "test": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js test --env=jsdom",
     "eject": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js eject"
   },
