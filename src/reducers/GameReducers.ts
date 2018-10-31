@@ -3,7 +3,6 @@ import { ChessActionType } from '../actions/ChessActions';
 import { combineReducers } from 'redux';
 import { Utils } from '../models/GameUtils';
 import { GameClient, BitGameState } from '../models/GameClient';
-import { Player } from 'src/models/Player';
 
 export interface IBoardApp {
     BoardPieces: IBoardPieces, 
@@ -33,8 +32,8 @@ export interface IBoardPieces {
 export interface IBoardState {
     game?: string;
     time?: number;
-    whitePlayer?: Player;
-    blackPlayer?: Player;
+    whitePlayer?: string;
+    blackPlayer?: string;
     W_MOVE?: boolean; //True - White, False - Black
     P_WHITE?: boolean;
     
@@ -207,8 +206,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 whitePlayer: action.whitePlayer,
                 blackPlayer: action.blackPlayer,
                 P_WHITE: true,
-                W_VIEW: true,
-                W_MOVE: false
+                W_VIEW: true
             });
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
@@ -217,11 +215,12 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 whitePlayer: action.whitePlayer,
                 blackPlayer: action.blackPlayer,
                 P_WHITE: false,
-                W_VIEW: false,
-                W_MOVE: false
+                W_VIEW: false
             });
         case ChessActionType.START:
             return Object.assign({}, state, {
+                whitePlayer: action.whitePlayer,
+                blackPlayer: action.blackPlayer,
                 W_MOVE: true
             });
         case ChessActionType.CHANGE_VIEW:

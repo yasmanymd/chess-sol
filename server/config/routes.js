@@ -63,5 +63,9 @@ module.exports.routes = {
   '/logout':                  '/api/v1/account/logout',
 
   'POST /newgame': { controller: 'GameController', action: 'newGame'},
-  'GET /subscribe': { controller: 'GameController', action: 'subscribe' }
+  'POST /subscribe': { controller: 'GameController', action: 'subscribe' },
+  'POST /unsubscribe': { controller: 'GameController', action: 'unsubscribe' },
+  'POST /joingame': { controller: 'GameController', action: 'joinGame' },
+  'POST /executeall': { controller: 'GameController', action: 'executeAll' },
+  'POST /executeexceptme': { controller: 'GameController', action: 'executeExceptMe' }
 };

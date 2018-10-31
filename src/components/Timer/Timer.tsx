@@ -1,13 +1,12 @@
 import * as React from 'react';
 import './css/timer.css';
 import * as classnames from "classnames";
-import { Player } from 'src/models/Player';
 
 export interface ITimerProps {
     whiteSeconds: number;
     blackSeconds: number;
-    whitePlayer?: Player;
-    blackPlayer?: Player;
+    whitePlayer?: string;
+    blackPlayer?: string;
     whiteMove?: boolean;
     whiteView?: boolean;
 
@@ -79,11 +78,11 @@ export class Timer extends React.Component<ITimerProps, ITimerState>{
         return (
             <div {...infoAttrs}>
                 <div className="white-info">
-                    <div>{this.props.whitePlayer != undefined ? this.props.whitePlayer!.name : null}</div>
+                    <div>{this.props.whitePlayer != undefined ? this.props.whitePlayer : null}</div>
                     <div>{wm < 10 ? "0" + wm : wm}:{ws < 10 ? "0" + ws : ws}</div>
                 </div>
                 <div className="black-info">
-                    <div>{this.props.blackPlayer != undefined ? this.props.blackPlayer!.name : null}</div>
+                    <div>{this.props.blackPlayer != undefined ? this.props.blackPlayer : null}</div>
                     <div>{bm < 10 ? "0" + bm : bm}:{bs < 10 ? "0" + bs : bs}</div>
                 </div>
             </div>

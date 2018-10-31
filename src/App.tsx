@@ -7,12 +7,11 @@ import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import BoardContainer from './containers/BoardContainer';
 import thunk from 'redux-thunk';
-import { Player } from './models/Player';
 import { Lobby } from './components/Lobby/Lobby';
 import { GameRoom } from './components/GameRoom/GameRoom';
 
 interface IAppState {
-  player: Player | undefined;
+  player: string | undefined;
   game: any | undefined;
 }
 
@@ -29,40 +28,22 @@ class App extends React.Component<any, IAppState> {
       applyMiddleware(thunk.withExtraArgument(this.socket))
     );
 
-    this.state = { player: undefined, game: undefined };
+    this.state = { player: 'yas', game: undefined };
     this.onSetName = this.onSetName.bind(this);
     this.onActionReceived = this.onActionReceived.bind(this);
   }
 
-  private guid(): string {
-    function s4(): string {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-  }
-
   onSetName(name: string) {
-    let player = new Player(this.guid(), name);
+    let player = name;
     this.setState({ player: player });
-
-    this.socket.post('/setPlayer', player);
-    this.socket.on('games', () => {
-
-    });
-
-    let store = this.store;
-    this.socket.on(player.id, (action: any) => {
-      action.state = store.getState();
-      store.dispatch(action);
-    });
   }
 
   onActionReceived(action: any) {
     action.state = this.store.getState();
     this.store.dispatch(action);
-    this.setState({game: action.game});
+    if (!this.state.game) {
+      this.setState({game: action.game});
+    }
   }
 
   public render() {

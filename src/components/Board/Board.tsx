@@ -5,13 +5,12 @@ import { BitGameState } from '../../models/GameClient';
 import { Piece } from '../../models/Piece';
 import * as classnames from "classnames";
 import { Timer } from '../Timer/Timer';
-import { Player } from 'src/models/Player';
 
 export interface IBoardProps {
     game?: string;
     time?:number;
-    whitePlayer?: Player;
-    blackPlayer?: Player;
+    whitePlayer?: string;
+    blackPlayer?: string;
 
     B_PAWNS: Long;
     B_ROOKS: Long;
