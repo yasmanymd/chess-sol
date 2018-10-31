@@ -1,1 +1,1 @@
-cp -r build/** server/assetes && rm -R ./build/**
+cp -r build/** server/assets && rm -R ./build/**
