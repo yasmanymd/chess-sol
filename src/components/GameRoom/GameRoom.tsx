@@ -76,18 +76,40 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     joinGame(game: Game) {
         const p = this.props;
 
-        p.socket.post('/joingame', {
-            game: game.id,
-            whitePlayer: game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '' ? p.player : game.whitePlayer, 
-            blackPlayer: game.blackPlayer == undefined || game.blackPlayer == null || game.blackPlayer == '' ? p.player : game.blackPlayer
-        }, (response: any, body: any) => {
+        fetch('/joingame', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                game: game.id,
+                whitePlayer: game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '' ? p.player : game.whitePlayer, 
+                blackPlayer: game.blackPlayer == undefined || game.blackPlayer == null || game.blackPlayer == '' ? p.player : game.blackPlayer
+            })
+        }).then(response => {
             if (p.onActionReceived) {
                 p.onActionReceived(response);
-                p.socket.post('/subscribe', {event: game.id}, () => {
+                
+                fetch('/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({event: game.id})
+                }).then(reponse => {
                     p.socket.on(game.id, (action: any) => {
                         p.onActionReceived(action);
                     });
-                    p.socket.post('/execute', {game: game.id, action: {type: 'START', whitePlayer: response.whitePlayer, blackPlayer: response.blackPlayer}});
+                    fetch('/execute', {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({game: game.id, action: {type: 'START', whitePlayer: response['whitePlayer'], blackPlayer: response['blackPlayer']}})
+                    });
                 });
             }
         });

@@ -18,9 +18,70 @@ function guid() {
 var game = { id: guid(), whitePlayer: null, blackPlayer: null };
 var games = [];
 
+app.use(express.static('build'));
+
 io.set('origins', '*:*');
 io.on('connection', async (socket) => {
-	socket.on('auth', (player) => { 
+	app.get('/', function(req, res) {
+		res.sendFile(__dirname + "/build/index.html");
+	});
+	
+	app.post('/newgame', function(req, res) {
+		let id = guid();
+	
+		try {
+			let game = {id:id, title: req.body.title,  whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time };
+			games[id] = game;
+	
+			socket.broadcast('game');
+		} catch(err) {
+			return res.status(500).send(err);
+		}
+	
+		console.log(req.body.whitePlayer);
+		return res.status(200).json({type: req.body.whitePlayer == undefined || req.body.whitePlayer == null || req.body.whitePlayer == '' ? 'SET_BLACK' : 'SET_WHITE', game: id, title: req.body.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
+	});
+
+	app.post('/joingame', function(req, res) {
+		let id = guid();
+
+		let game;
+		let result; 
+	
+		try {
+			let game = {id:id, title: req.body.title,  whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time };
+			games[id] = game;
+
+			game = games[req.body.game];
+			delete games[req.body.game];
+			socket.broadcast('game');
+            
+            if (game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '') {
+                result = {type: 'SET_WHITE', game: req.body.game, title: game.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: game.time };
+            } else {
+                result = {type: 'SET_BLACK', game: req.body.game, title: game.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: game.time };
+            }
+		} catch(err) {
+			return res.status(500).send(err);
+		}
+	
+		console.log(req.body.whitePlayer);
+		return res.status(200).json(result);
+	});
+
+	app.post('/subscribe', function(req, res) {
+		let id = guid();
+
+        try {
+			await Game.subscribe(req, [req.body.event]);
+		} catch(err) {
+			return res.status(500).send(err);
+        }
+
+		return res.status(200).send();
+	});
+
+	/*socket.on('auth', (player) => { 
 		console.log(player);
 		if (!game.whitePlayer) {
 			console.log('white: ' + player.Id);
@@ -49,13 +110,7 @@ io.on('connection', async (socket) => {
 			games[game.id] = game;
 			game = { id: guid(), whitePlayer: null, blackPlayer: null };
 		}
-	});
-});
-
-app.use(express.static('build'));
-
-app.get('/', function(req, res) {
-	res.sendFile(__dirname + "/build/index.html");
+	});*/
 });
 
 server.listen(port, () => {

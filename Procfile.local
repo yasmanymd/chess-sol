@@ -1,1 +1,1 @@
-web: SET REACT_APP_SERVER_URL=http://localhost:5000/&&npm run-script build && cd server && sails lift
+web: SET REACT_APP_SERVER_URL=http://localhost:8080/&&npm run-script build && node app.js
