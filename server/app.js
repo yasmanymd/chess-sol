@@ -1,54 +1,99 @@
-/**
- * app.js
- *
- * Use `app.js` to run your app without `sails lift`.
- * To start the server, run: `node app.js`.
- *
- * This is handy in situations where the sails CLI is not relevant or useful,
- * such as when you deploy to a server, or a PaaS like Heroku.
- *
- * For example:
- *   => `node app.js`
- *   => `npm start`
- *   => `forever start app.js`
- *   => `node debug app.js`
- *
- * The same command-line arguments and env vars are supported, e.g.:
- * `NODE_ENV=production node app.js --port=80 --verbose`
- *
- * For more information see:
- *   https://sailsjs.com/anatomy/app.js
- */
+const express = require("express");
+const app = express();
+const path = __dirname + '/app.js';
 
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+var port = process.env.PORT || 8080;
 
-// Ensure we're in the project directory, so cwd-relative paths work as expected
-// no matter where we actually lift from.
-// > Note: This is not required in order to lift, but it is a convenient default.
-process.chdir(__dirname);
+var bodyParser = require('body-parser');
 
+function guid() {
+	function s4() {
+	  return Math.floor((1 + Math.random()) * 0x10000)
+		.toString(16)
+		.substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+  }
 
+var game = { id: guid(), whitePlayer: null, blackPlayer: null };
+var games = {};
 
-// Attempt to import `sails` dependency, as well as `rc` (for loading `.sailsrc` files).
-var sails;
-var rc;
-try {
-  sails = require('sails');
-  rc = require('sails/accessible/rc');
-} catch (err) {
-  console.error('Encountered an error when attempting to require(\'sails\'):');
-  console.error(err.stack);
-  console.error('--');
-  console.error('To run an app using `node app.js`, you need to have Sails installed');
-  console.error('locally (`./node_modules/sails`).  To do that, just make sure you\'re');
-  console.error('in the same directory as your app and run `npm install`.');
-  console.error();
-  console.error('If Sails is installed globally (i.e. `npm install -g sails`) you can');
-  console.error('also run this app with `sails lift`.  Running with `sails lift` will');
-  console.error('not run this file (`app.js`), but it will do exactly the same thing.');
-  console.error('(It even uses your app directory\'s local Sails install, if possible.)');
-  return;
-}//-•
+app.disable('etag');
+app.use(bodyParser.json());
 
+app.get('/game', function(req, res) {
+  console.log(games);
+  res.json(games);
+});
 
-// Start server
-sails.lift(rc('sails'));
+app.use(express.static('build'));
+
+io.set('origins', '*:*');
+io.on('connection', async (socket) => {
+	app.get('/', function(req, res) {
+		res.sendFile(__dirname + "/build/index.html");
+  });
+	
+	app.post('/newgame', function(req, res) {
+		let id = guid();
+	
+		try {
+			let game = {id:id, title: req.body.title,  whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time };
+			games[id] = game;
+  
+      console.log(games);
+      socket.broadcast.emit('game');
+		} catch(err) {
+      console.log(err);
+			return res.status(500).send(err);
+		}
+	
+		console.log(req.body.whitePlayer);
+		return res.status(200).json({type: req.body.whitePlayer == undefined || req.body.whitePlayer == null || req.body.whitePlayer == '' ? 'SET_BLACK' : 'SET_WHITE', game: id, title: req.body.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
+	});
+
+	app.post('/joingame', function(req, res) {
+		let result; 
+		let opposite;
+	
+		try {
+      var id = req.body.game;
+			let game = Object.assign({}, games[id], {whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer});      
+      delete games[id];
+      
+			socket.broadcast.emit('game');
+            
+      if (game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '') {
+					result = {type: 'SET_WHITE', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
+					opposite = {type: 'SET_BLACK', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
+      } else {
+					result = {type: 'SET_BLACK', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
+					opposite = {type: 'SET_WHITE', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
+      }
+		} catch(err) {
+			return res.status(500).send(err);
+		}
+
+		socket.broadcast.emit(id, opposite);
+		return res.status(200).json(result);
+	});	
+
+	app.post('/execute', function(req, res) {
+		console.log(req.body.game);
+		console.log(req.body.action);
+		try {
+			socket.emit(req.body.game, req.body.action);
+			socket.broadcast.emit(req.body.game, req.body.action);
+		} catch(err) {
+			return res.status(500).send(err);
+		}
+
+		return res.status(200).send();
+	});	
+});
+
+server.listen(port, () => {
+	console.log("Backend Server is running on http://localhost:" + port);
+});
