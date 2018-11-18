@@ -55,6 +55,24 @@ export class Utils {
     public static showBoardFromString(board: string) {
         return this.showBoardFromLong(Long.fromString(board));
     }
+
+    public static postData(url = '', data = {}) {
+        return fetch(url, {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+        })
+        .then(response => response.json()); // parses response to JSON
+    }
+
+    public static getData(url = '') {
+        return fetch(url, {
+            method: "GET"
+        })
+        .then(response => response.json()); // parses response to JSON
+    }
 }
 
 window["utils"] = Utils;

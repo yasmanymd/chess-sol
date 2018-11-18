@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Game } from 'src/models/Game';
 import { GameCard } from 'src/components/GameCard/GameCard';
+import { Utils } from '../../models/GameUtils';
 import './css/GameRoom.css';
 
 export interface IGameRoomState {
@@ -32,21 +33,21 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     componentDidMount() {
         const socket = this.props.socket;
         let self = this;
-        socket.get('/game', (games: Game[]) => {
-            self.setState({ games: games});
-        });
-        socket.post('/subscribe', {event: 'game'}, () => {
-            socket.on('game', () => {
-                socket.get('/game', (games: Game[]) => {
+        Utils.getData('/game')
+            .then((games: Game[]) => {
+                self.setState({ games: games});
+            });
+
+        socket.on('game', () => {
+            Utils.getData('/game')
+                .then((games: Game[]) => {
                     self.setState({ games: games});
                 });
-            });
         });
     }
 
     componentWillUnmount() {
         const socket = this.props.socket;
-        socket.post('/unsubscribe', {event: 'game'});
         socket.off('game');
     }
 
@@ -54,63 +55,39 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
         const p = this.props;
         const s = this.state;
         if (s.title != null && s.title != '') {
-            p.socket.post('/newgame', 
-            {
+            Utils.postData('/newgame', {
                 title: s.title, 
                 whitePlayer: s.colorPiece === 'w' ? p.player : undefined, 
                 blackPlayer: s.colorPiece !== 'w' ? p.player : undefined, 
                 time: s.time 
-            }, (response: any, body: any) => {
+            }).then(res => {
                 if (p.onActionReceived) {
-                    p.onActionReceived(response);
-                    p.socket.post('/subscribe', {event: response.game}, () => {
-                        p.socket.on(response.game, (action: any) => {
-                            p.onActionReceived(action);
-                        });
+                    p.onActionReceived(res);
+
+                    p.socket.on(res.game, (action: any) => {
+                        p.onActionReceived(action);
                     });
                 }
-            })
+            });
         }
     }
 
     joinGame(game: Game) {
         const p = this.props;
 
-        fetch('/joingame', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                game: game.id,
-                whitePlayer: game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '' ? p.player : game.whitePlayer, 
-                blackPlayer: game.blackPlayer == undefined || game.blackPlayer == null || game.blackPlayer == '' ? p.player : game.blackPlayer
-            })
-        }).then(response => {
+        Utils.postData('/joingame', {
+            game: game.id,
+            whitePlayer: game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '' ? p.player : game.whitePlayer, 
+            blackPlayer: game.blackPlayer == undefined || game.blackPlayer == null || game.blackPlayer == '' ? p.player : game.blackPlayer
+        }).then(res => {
             if (p.onActionReceived) {
-                p.onActionReceived(response);
+                p.onActionReceived(res);
                 
-                fetch('/subscribe', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({event: game.id})
-                }).then(reponse => {
-                    p.socket.on(game.id, (action: any) => {
-                        p.onActionReceived(action);
-                    });
-                    fetch('/execute', {
-                        method: 'POST',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({game: game.id, action: {type: 'START', whitePlayer: response['whitePlayer'], blackPlayer: response['blackPlayer']}})
-                    });
+                p.socket.on(game.id, (action: any) => {
+                    p.onActionReceived(action);
                 });
+
+                Utils.postData('/execute', {game: game.id, action: {type: 'START', whitePlayer: res['whitePlayer'], blackPlayer: res['blackPlayer']}});
             }
         });
     }
@@ -152,7 +129,8 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                     <button onClick={this.onNewGame}>New</button>
                 </div>
                 <div className="game-list">
-                    {this.state.games.map((game: Game) => {
+                    {Object.keys(this.state.games).map((key: any) => {
+                        var game = this.state.games[key];
                         return <GameCard key={game.id} game={game} onGameCardSelected={this.joinGame}></GameCard>;
                     })}
                 </div>
