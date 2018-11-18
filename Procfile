@@ -1,1 +1,1 @@
-web: npm run-script build && cd server && sails lift
+web: npm run-script build && node app.js
