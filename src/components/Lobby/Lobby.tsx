@@ -25,6 +25,7 @@ export class Lobby extends React.Component<ILobbyProps, any> {
     public render() {
         return (
             <div className="App-lobby">
+                Name: 
                 <input type="text" onChange={this.updateInput} />
                 <button onClick={this.onClick}>Submit</button>
             </div>
