@@ -41,7 +41,9 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
         socket.on('game', () => {
             Utils.getData('/game')
                 .then((games: Game[]) => {
-                    self.setState({ games: games});
+                    if (self['isMounted'] === true) {
+                        self.setState({ games: games});
+                    }
                 });
         });
     }
