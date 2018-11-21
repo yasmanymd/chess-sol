@@ -1,7 +1,6 @@
 import * as React from 'react';
 import './App.css';
 
-import logo from './logo.svg';
 import BoardApp from './reducers/GameReducers';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
@@ -9,6 +8,7 @@ import BoardContainer from './containers/BoardContainer';
 import thunk from 'redux-thunk';
 import { Lobby } from './components/Lobby/Lobby';
 import { GameRoom } from './components/GameRoom/GameRoom';
+import { AppBar, Toolbar, Typography } from '@material-ui/core';
 
 interface IAppState {
   player: string | undefined;
@@ -49,19 +49,24 @@ class App extends React.Component<any, IAppState> {
   public render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        {this.state.player == undefined && (<Lobby onSetName={this.onSetName}></Lobby>)}
-        {this.state.player != undefined && this.state.game == undefined && (<GameRoom socket={this.socket} player={this.state.player} onActionReceived={this.onActionReceived} ></GameRoom>)}
-        {this.state.player != undefined && this.state.game != undefined && (
-          <div className="App-intro">
-            <Provider store={this.store}>
-              <BoardContainer />
-            </Provider>
-          </div>
-        )}        
+        <AppBar position="fixed" style={{zIndex: 1201}}>
+          <Toolbar>
+            <Typography variant="h6" color="inherit" noWrap>
+              Welcome to React, Material Design and Bitboards
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <div className="main">
+          {this.state.player == undefined && (<Lobby onSetName={this.onSetName}></Lobby>)}
+          {this.state.player != undefined && this.state.game == undefined && (<GameRoom socket={this.socket} player={this.state.player} onActionReceived={this.onActionReceived} ></GameRoom>)}
+          {this.state.player != undefined && this.state.game != undefined && (
+            <div className="App-intro">
+              <Provider store={this.store}>
+                <BoardContainer />
+              </Provider>
+            </div>
+          )}
+        </div>
       </div>
     );
   }

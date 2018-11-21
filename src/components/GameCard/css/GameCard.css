@@ -1,10 +1,8 @@
 .card {
-    width: 200px;
-    padding: 10px;
-    margin: 2px;
-    border: solid 1px black;
+    max-width: 345;
 }
 
-.card:hover {
-    background-color: goldenrod;
+.media {
+    object-fit: cover;
+    height: 140px;
 }

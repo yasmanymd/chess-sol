@@ -63,8 +63,7 @@ export class Utils {
                 "Content-Type": "application/json; charset=utf-8",
             },
             body: JSON.stringify(data), // body data type must match "Content-Type" header
-        })
-        .then(response => response.json()); // parses response to JSON
+        });
     }
 
     public static getData(url = '') {

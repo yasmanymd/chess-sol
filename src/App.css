@@ -28,3 +28,12 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.main {
+  padding-top: 70px;
+}
+
+.app-bar {
+  position: fixed;
+  z-index: 1200;
+}

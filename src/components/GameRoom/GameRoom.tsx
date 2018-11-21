@@ -3,6 +3,7 @@ import { Game } from 'src/models/Game';
 import { GameCard } from 'src/components/GameCard/GameCard';
 import { Utils } from '../../models/GameUtils';
 import './css/GameRoom.css';
+import { Drawer, TextField, Radio, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
 export interface IGameRoomState {
     games: Game[];
@@ -62,7 +63,9 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                 whitePlayer: s.colorPiece === 'w' ? p.player : undefined, 
                 blackPlayer: s.colorPiece !== 'w' ? p.player : undefined, 
                 time: s.time 
-            }).then(res => {
+            })
+            .then(response => response.json())
+            .then(res => {
                 if (p.onActionReceived) {
                     p.onActionReceived(res);
 
@@ -81,7 +84,9 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
             game: game.id,
             whitePlayer: game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '' ? p.player : game.whitePlayer, 
             blackPlayer: game.blackPlayer == undefined || game.blackPlayer == null || game.blackPlayer == '' ? p.player : game.blackPlayer
-        }).then(res => {
+        })
+        .then(response => response.json())
+        .then(res => {
             if (p.onActionReceived) {
                 p.onActionReceived(res);
                 
@@ -99,43 +104,66 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     }
 
     onColorChanged(e: any) {
-        this.setState({colorPiece: e.currentTarget.value });
+        this.setState({colorPiece: e.target.value });
     }
 
     onTimeChanged(e: any) {
-        this.setState({time: e.currentTarget.value * 1 });
+        this.setState({time: e.target.value * 1 });
     }
 
     public render() {
         return (
             <div className="game-room">
+            <Drawer
+                className="drawer"
+                variant="permanent">
                 <div className="game-new">
-                    <div>Title: <input type="text" onChange={this.onTitleChanged}></input></div> 
+                    <TextField id="input-with-icon-grid" label="Title" onChange={this.onTitleChanged} />
+                    
                     <div>Color: 
-                        <input type="radio" name="color" 
-                            value="w"
-                            checked={this.state.colorPiece === "w"} 
-                            onChange={this.onColorChanged} />White
-                        <input type="radio" name="color" 
-                            value="b"
-                            checked={this.state.colorPiece === "b"} 
-                            onChange={this.onColorChanged} />Black
-                    </div> 
-                    <div>Time: 
-                    <select onChange={this.onTimeChanged} value={this.state.time}>
-                        <option value="300">5 min</option>
-                        <option value="420">7 min</option>
-                        <option value="600">10 min</option>
-                    </select>
-                    </div> 
-                    <button onClick={this.onNewGame}>New</button>
+                    <Radio
+                        checked={this.state.colorPiece === "w"} 
+                        onChange={this.onColorChanged}
+                        value="w"
+                        name="color"
+                        color="default"
+                        /> White
+                        
+                    <Radio
+                        checked={this.state.colorPiece === "b"} 
+                        onChange={this.onColorChanged}
+                        value="b"
+                        name="color"
+                        color="default"
+                        /> Black
+                    </div>
+                    <div> 
+                        <FormControl>
+                            <InputLabel htmlFor="time-simple">Time</InputLabel>
+                            <Select
+                                value={this.state.time}
+                                onChange={this.onTimeChanged}>
+                                <MenuItem value={300}>5 min</MenuItem>
+                                <MenuItem value={420}>7 min</MenuItem>
+                                <MenuItem value={600}>10 min</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div style={{paddingTop: 10}}>
+                        <Button variant="contained" color="primary" onClick={this.onNewGame}>
+                            New
+                        </Button>
+                    </div>
                 </div>
-                <div className="game-list">
-                    {Object.keys(this.state.games).map((key: any) => {
-                        var game = this.state.games[key];
-                        return <GameCard key={game.id} game={game} onGameCardSelected={this.joinGame}></GameCard>;
-                    })}
-                </div>
+            </Drawer>
+            <main className="game-list">
+                {Object.keys(this.state.games).map((key: any) => {
+                    var game = this.state.games[key];
+                    return <GameCard key={game.id} game={game} onGameCardSelected={this.joinGame}></GameCard>;
+                })}
+            </main>
+                
+                
             </div>
         );
     }
