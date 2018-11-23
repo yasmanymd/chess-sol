@@ -3,13 +3,16 @@
     flex-direction: row;
 }
 .board {
-    border: solid 2px black;
+    border: solid 4px rgb(185,5,9);
     display: flex;
     flex-direction: column;
     width: fit-content;
 }
+.actions {
+    padding-top: 10px;
+}
 .check {
-    border: solid 2px crimson !important;
+    box-shadow: 0px 0px 25px red;
 }
 .row {
     display: flex; 
@@ -18,10 +21,15 @@
 .cell {
     width: 50px;
     height: 50px;
-    border: solid 1px black;
+    border: solid 1px rgb(185,5,9);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.light {
+    background-color: rgb(253,224,180);
 }
 .dark {
-    background-color: gray;
+    background-color: rgb(219,160,116);
 }
 .f-move {
     background-color: lightskyblue !important;
@@ -41,63 +49,41 @@
     margin-bottom: 10px;
 }
 .b-bishop {
-    background-image: url(../themes/default/bbishop.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/b_bishop.png);
 }
 .b-king {
-    background-image: url(../themes/default/bking.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/b_king.png);
 }
 .b-knight {
-    background-image: url(../themes/default/bknight.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/b_knight.png);
 }
 .b-pawn {
-    background-image: url(../themes/default/bpawn.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/b_pawn.png);
+    background-position-y: -3px;
 }
 .b-queen {
-    background-image: url(../themes/default/bqueen.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/b_queen.png);
 }
 .b-rook {
-    background-image: url(../themes/default/brook.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/b_rook.png);
 }
 
 .w-bishop {
-    background-image: url(../themes/default/wbishop.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/w_bishop.png);
 }
 .w-king {
-    background-image: url(../themes/default/wking.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/w_king.png);
 }
 .w-knight {
-    background-image: url(../themes/default/wknight.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/w_knight.png);
 }
 .w-pawn {
-    background-image: url(../themes/default/wpawn.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/w_pawn.png);
+    background-position-y: -3px;
 }
 .w-queen {
-    background-image: url(../themes/default/wqueen.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/w_queen.png);
 }
 .w-rook {
-    background-image: url(../themes/default/wrook.png);
-    background-size: 100%;
-    background-position: center;
+    background-image: url(../themes/default/w_rook.png);
 }

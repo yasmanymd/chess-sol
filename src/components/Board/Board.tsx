@@ -5,6 +5,7 @@ import { BitGameState } from '../../models/GameClient';
 import { Piece } from '../../models/Piece';
 import * as classnames from "classnames";
 import { Timer } from '../Timer/Timer';
+import { Button } from '@material-ui/core';
 
 export interface IBoardProps {
     game?: string;
@@ -103,7 +104,9 @@ function Board(props: IBoardProps) {
                     </div>
                 ) }
                 <div className="actions">
-                    <button onClick={props.onChangeView}>Change</button>
+                    <Button variant="contained" color="default" onClick={props.onChangeView}>
+                        Change
+                    </Button>
                 </div>
                 {props.GAME_OVER != undefined && props.GAME_OVER > 0 && (
                     <div>
