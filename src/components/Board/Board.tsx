@@ -5,7 +5,8 @@ import { BitGameState } from '../../models/GameClient';
 import { Piece } from '../../models/Piece';
 import * as classnames from "classnames";
 import { Timer } from '../Timer/Timer';
-import { Button } from '@material-ui/core';
+import { Button, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions } from '@material-ui/core';
+import gameover from './themes/default/gameover.png';
 
 export interface IBoardProps {
     game?: string;
@@ -30,8 +31,8 @@ export interface IBoardProps {
     W_MOVE?: boolean; //True - White, False - Black, null - no one
     P_WHITE?: boolean;
     
-    B_CASTLING: boolean;
-    W_CASTLING: boolean;
+    B_CASTLING: number;
+    W_CASTLING: number;
     W_VIEW: boolean; //True - White, False - Black
     SELECTED_POSITION?: number;
     LAST_MOVE?: number[];
@@ -45,9 +46,15 @@ export interface IBoardProps {
     onDoMove?: (event: any) => void;
     onCoronate?: (event: any) => void;
     onTimeout?: (event: any) => void;
+    onSurrender?: (event: any) => void;
+    onGameOver?: (event: any) => void;
 }
 
 function Board(props: IBoardProps) {
+    let whiteMove = undefined; 
+    if ((props.GAME_OVER === undefined || props.GAME_OVER === null || props.GAME_OVER === 0) && props.W_MOVE != undefined) {
+        whiteMove = props.W_MOVE;
+    }
     return (
         <div className="room">
             <div>
@@ -107,20 +114,40 @@ function Board(props: IBoardProps) {
                     <Button variant="contained" color="default" onClick={props.onChangeView}>
                         Change
                     </Button>
+                    {props.W_MOVE != undefined && (
+                     <Button variant="contained" color="default" onClick={props.onSurrender!.bind(null, props.P_WHITE === true ? 6 : 7)}>
+                        Surrender
+                    </Button>
+                    )}
                 </div>
                 {props.GAME_OVER != undefined && props.GAME_OVER > 0 && (
-                    <div>
-                        Game over.
-                        {props.GAME_OVER === 1 && <div>Whites wins by checkmate.</div>}
-                        {props.GAME_OVER === 2 && <div>Blacks wins by checkmate.</div>}
-                        {props.GAME_OVER === 3 && <div>Draws.</div>}
-                        {props.GAME_OVER === 4 && <div>Whites win. Blacks timeout.</div>}
-                        {props.GAME_OVER === 5 && <div>Blacks win. Whites timeout.</div>}
-                    </div>
+                    <Card>
+                        <CardActionArea>
+                        <CardMedia
+                            className="gameover"
+                            component="img"
+                            image={gameover}
+                        />
+                        <CardContent>
+                            {props.GAME_OVER === 1 && <Typography component="p">Whites wins by checkmate.</Typography>}
+                            {props.GAME_OVER === 2 && <Typography component="p">Blacks wins by checkmate.</Typography>}
+                            {props.GAME_OVER === 3 && <Typography component="p">Draws.</Typography>}
+                            {props.GAME_OVER === 4 && <Typography component="p">Whites win. Blacks timeout.</Typography>}
+                            {props.GAME_OVER === 5 && <Typography component="p">Blacks win. Whites timeout.</Typography>}
+                            {props.GAME_OVER === 6 && <Typography component="p">White surrenders.</Typography>}
+                            {props.GAME_OVER === 7 && <Typography component="p">Blacks surrenders.</Typography>}
+                        </CardContent>
+                        </CardActionArea>
+                        <CardActions>
+                        <Button size="small" color="primary" onClick={props.onGameOver}>
+                            Continue
+                        </Button>
+                        </CardActions>
+                    </Card>
                 )}
             </div>
             <div>
-            {props.time && <Timer whiteSeconds={props.time} blackSeconds={props.time} whitePlayer={props.whitePlayer} blackPlayer={props.blackPlayer} whiteMove={props.W_MOVE} whiteView={props.W_VIEW} onTimeout={props.onTimeout!.bind(null, props.W_MOVE === true ? 5 : 4)} />}
+            {props.time && <Timer whiteSeconds={props.time} blackSeconds={props.time} whitePlayer={props.whitePlayer} blackPlayer={props.blackPlayer} whiteMove={whiteMove} whiteView={props.W_VIEW} onTimeout={props.onTimeout!.bind(null, props.W_MOVE === true ? 5 : 4)} />}
             </div>
         </div>
     );

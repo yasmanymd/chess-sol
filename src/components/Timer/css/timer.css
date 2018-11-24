@@ -1,13 +1,16 @@
 .info {
     display: flex;
-    align-content: space-between;
+    justify-content: space-between;
     height: 420px;
     width: 80px;
     margin-left: 10px;
 }
 .w-view {
-    flex-wrap: wrap-reverse;
+    flex-direction: column-reverse;
 }
 .b-view {
-    flex-wrap: wrap;
+    flex-direction: column;
+}
+.playing {
+    background-color: rgb(192,209,142) !important;
 }

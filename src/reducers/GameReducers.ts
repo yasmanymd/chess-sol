@@ -37,11 +37,12 @@ export interface IBoardState {
     W_MOVE?: boolean; //True - White, False - Black
     P_WHITE?: boolean;
     
-    B_CASTLING: boolean;
-    W_CASTLING: boolean;
+    B_CASTLING: number;
+    W_CASTLING: number;
     W_VIEW: boolean; //True - White, False - Black
     CORONATE: number | null;
     GAME_OVER?: number;
+    onGameOver?: (event: any) => void;
 }
 
 function createBoardPieces(): IBoardPieces {
@@ -91,10 +92,11 @@ function initBoardPieces(): IBoardPieces {
 function initBoardState(): IBoardState {
     
     var init: IBoardState = {
-      B_CASTLING: false,
-      W_CASTLING: false,
+      B_CASTLING: 0,
+      W_CASTLING: 0,
       W_VIEW: true,
-      CORONATE: null
+      CORONATE: null,
+      GAME_OVER: undefined
     };
 
     return init;
@@ -229,14 +231,18 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
             });
         case ChessActionType.DO_MOVE:
             var s = action.state;
+            var g = GameClient.instance();
             if ((action.position >= 56 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
                 (action.position <= 7 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.B_PAWNS_CHAR)) {
                 return Object.assign({}, state, {
                     CORONATE: action.position
                 });
             }
-            var isGameOver = checkGameOver(s);
+            var isGameOver = checkGameOver(s);            
             return Object.assign({}, state, {
+                W_CASTLING: g.whiteCastling,
+                B_CASTLING: g.blackCastling,
+                
                 W_MOVE: !isGameOver ? !state.W_MOVE : null,
                 GAME_OVER: isGameOver
             });

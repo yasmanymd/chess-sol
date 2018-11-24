@@ -21,12 +21,19 @@ const mapDispatchToProps = (dispatch: any) => {
         onCoronate: (position: number, piece: string) => {
             dispatch(coronate(position, piece))
         },
-        onTimeout: (reason: number)  => {
+        onTimeout: (reason: number) => {
+            dispatch(gameOver(reason))
+        },
+        onSurrender: (reason: number) => {
             dispatch(gameOver(reason))
         }
     };
 }
 
-const BoardContainer = connect(mapStateToProps, mapDispatchToProps)(Board);
+const mergeProps = (stateProps: any, dispatchProps: any, ownProps: any) => {
+    return Object.assign({}, ownProps, stateProps, dispatchProps);
+}
+
+const BoardContainer = connect(mapStateToProps, mapDispatchToProps, mergeProps)(Board);
 
 export default BoardContainer;

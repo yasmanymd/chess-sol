@@ -16,6 +16,8 @@ export interface IGameState {
     isTable(isWhite?: boolean): boolean;
     updateState(isWhiteMove: boolean): void;
     coronate(piece: string): void;
+    whiteCastling: number;
+    blackCastling: number;
     coronation?: string;
     W_ROOKS: Long;
     W_KNIGHTS: Long;
@@ -100,8 +102,8 @@ export class BitGameState implements IGameState {
     private enemyEmptySquares: Long; 
     private whiteAttack: Long;
     private blackAttack: Long;
-    private whiteCastling: number;
-    private blackCastling: number;
+    public whiteCastling: number;
+    public blackCastling: number;
     private lastPos: number;
     public coronation?: string;
 
@@ -146,8 +148,8 @@ export class BitGameState implements IGameState {
         this.B_QUEENS = board.B_QUEENS;
         this.B_KING = board.B_KING;
 
-        this.whiteCastling = +boardState.W_CASTLING;
-        this.blackCastling = +boardState.B_CASTLING;
+        this.whiteCastling = boardState.W_CASTLING;
+        this.blackCastling = boardState.B_CASTLING;
 
         if (boardState.W_MOVE != null) {
             this.setIsWhiteMove(boardState.W_MOVE);

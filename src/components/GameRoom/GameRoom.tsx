@@ -3,7 +3,7 @@ import { Game } from 'src/models/Game';
 import { GameCard } from 'src/components/GameCard/GameCard';
 import { Utils } from '../../models/GameUtils';
 import './css/GameRoom.css';
-import { Drawer, TextField, Radio, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { Drawer, TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
 export interface IGameRoomState {
     games: Game[];
@@ -26,7 +26,6 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
 
         this.onNewGame = this.onNewGame.bind(this);
         this.onTitleChanged = this.onTitleChanged.bind(this);
-        this.onColorChanged = this.onColorChanged.bind(this);
         this.onTimeChanged = this.onTimeChanged.bind(this);
         this.joinGame = this.joinGame.bind(this);
     }
@@ -58,8 +57,8 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
         if (s.title != null && s.title != '') {
             Utils.postData('/newgame', {
                 title: s.title, 
-                whitePlayer: s.colorPiece === 'w' ? p.player : undefined, 
-                blackPlayer: s.colorPiece !== 'w' ? p.player : undefined, 
+                whitePlayer: p.player, 
+                blackPlayer: undefined, 
                 time: s.time 
             })
             .then(response => response.json())
@@ -101,10 +100,6 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
         this.setState({title: e.currentTarget.value });
     }
 
-    onColorChanged(e: any) {
-        this.setState({colorPiece: e.target.value });
-    }
-
     onTimeChanged(e: any) {
         this.setState({time: e.target.value * 1 });
     }
@@ -118,23 +113,6 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                 <div className="game-new">
                     <TextField id="input-with-icon-grid" label="Title" onChange={this.onTitleChanged} />
                     
-                    <div>Color: 
-                    <Radio
-                        checked={this.state.colorPiece === "w"} 
-                        onChange={this.onColorChanged}
-                        value="w"
-                        name="color"
-                        color="default"
-                        /> White
-                        
-                    <Radio
-                        checked={this.state.colorPiece === "b"} 
-                        onChange={this.onColorChanged}
-                        value="b"
-                        name="color"
-                        color="default"
-                        /> Black
-                    </div>
                     <div> 
                         <FormControl>
                             <InputLabel htmlFor="time-simple">Time</InputLabel>

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './css/timer.css';
 import * as classnames from "classnames";
+import { Paper, Typography } from '@material-ui/core';
 
 export interface ITimerProps {
     whiteSeconds: number;
@@ -54,8 +55,11 @@ export class Timer extends React.Component<ITimerProps, ITimerState>{
     }
 
     start() {
-        if ((this.interval == undefined || this.interval === null) && this.props.whiteMove !== undefined) {
+        if ((this.interval == undefined || this.interval === null) && this.props.whiteMove !== undefined && this.props.whiteMove !== null) {
             this.interval = setInterval(this.tick, 1000);
+        }
+        if (this.interval != null && this.interval != undefined && (this.props.whiteMove === null || this.props.whiteMove === undefined)) {
+            this.stop();
         }
     }
 
@@ -75,16 +79,34 @@ export class Timer extends React.Component<ITimerProps, ITimerState>{
                 "b-view": this.props.whiteView === false
             })
         };
+        let infoWhite = {
+            className: classnames("white-info", {
+                "playing": this.props.whiteMove === true
+            })
+        };
+        let infoBlack = {
+            className: classnames("black-info", {
+                "playing": this.props.whiteMove === false
+            })
+        };
         return (
             <div {...infoAttrs}>
-                <div className="white-info">
-                    <div>{this.props.whitePlayer != undefined ? this.props.whitePlayer : null}</div>
-                    <div>{wm < 10 ? "0" + wm : wm}:{ws < 10 ? "0" + ws : ws}</div>
-                </div>
-                <div className="black-info">
-                    <div>{this.props.blackPlayer != undefined ? this.props.blackPlayer : null}</div>
-                    <div>{bm < 10 ? "0" + bm : bm}:{bs < 10 ? "0" + bs : bs}</div>
-                </div>
+                <Paper {...infoWhite} elevation={1}>
+                    <Typography variant="h5" component="h3">
+                        {this.props.whitePlayer != undefined ? this.props.whitePlayer : null}
+                    </Typography>
+                    <Typography component="p">
+                        {wm < 10 ? "0" + wm : wm}:{ws < 10 ? "0" + ws : ws}
+                    </Typography>
+                </Paper>
+                <Paper {...infoBlack} elevation={1}>
+                    <Typography variant="h5" component="h3">
+                        {this.props.blackPlayer != undefined ? this.props.blackPlayer : null}
+                    </Typography>
+                    <Typography component="p">
+                        {bm < 10 ? "0" + bm : bm}:{bs < 10 ? "0" + bs : bs}
+                    </Typography>
+                </Paper>
             </div>
         );
     }

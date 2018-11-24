@@ -31,6 +31,7 @@ class App extends React.Component<any, IAppState> {
     this.state = { player: undefined, game: undefined };
     this.onSetName = this.onSetName.bind(this);
     this.onActionReceived = this.onActionReceived.bind(this);
+    this.onGameOver = this.onGameOver.bind(this);
   }
 
   onSetName(name: string) {
@@ -44,6 +45,15 @@ class App extends React.Component<any, IAppState> {
     if (!this.state.game) {
       this.setState({game: action.game});
     }
+  }
+
+  onGameOver() {
+    this.setState({game: undefined});
+    this.store = createStore(
+      BoardApp,
+      applyMiddleware(thunk.withExtraArgument(this.socket))
+    );
+
   }
 
   public render() {
@@ -62,7 +72,7 @@ class App extends React.Component<any, IAppState> {
           {this.state.player != undefined && this.state.game != undefined && (
             <div className="App-intro">
               <Provider store={this.store}>
-                <BoardContainer />
+                <BoardContainer onGameOver={this.onGameOver} />
               </Provider>
             </div>
           )}
