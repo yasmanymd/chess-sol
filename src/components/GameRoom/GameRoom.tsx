@@ -132,12 +132,12 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                     </div>
                 </div>
             </Drawer>
-            <main className="game-list">
+            <div className="game-list">
                 {Object.keys(this.state.games).map((key: any) => {
                     var game = this.state.games[key];
                     return <GameCard key={game.id} game={game} onGameCardSelected={this.joinGame}></GameCard>;
                 })}
-            </main>
+            </div>
                 
                 
             </div>
