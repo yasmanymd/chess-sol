@@ -51,7 +51,7 @@ io.on('connection', async (socket) => {
 		}
 	
 		console.log(req.body.whitePlayer);
-		return res.status(200).json({type: req.body.whitePlayer == undefined || req.body.whitePlayer == null || req.body.whitePlayer == '' ? 'SET_BLACK' : 'SET_WHITE', game: id, title: req.body.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
+		return res.status(200).json({type: 'SET_WHITE', game: id, title: req.body.title, whitePlayer: req.body.whitePlayer, blackPlayer: req.body.blackPlayer, time: req.body.time });
 	});
 
 	app.post('/joingame', function(req, res) {
@@ -64,14 +64,9 @@ io.on('connection', async (socket) => {
       delete games[id];
       
 			socket.broadcast.emit('game');
-            
-      if (game.whitePlayer == undefined || game.whitePlayer == null || game.whitePlayer == '') {
-					result = {type: 'SET_WHITE', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
-					opposite = {type: 'SET_BLACK', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
-      } else {
-					result = {type: 'SET_BLACK', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
-					opposite = {type: 'SET_WHITE', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
-      }
+      
+			result = {type: 'SET_BLACK', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
+			opposite = {type: 'SET_WHITE', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
 		} catch(err) {
 			return res.status(500).send(err);
 		}
