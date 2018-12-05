@@ -66,12 +66,10 @@ io.on('connection', async (socket) => {
 			socket.broadcast.emit('game');
       
 			result = {type: 'SET_BLACK', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
-			opposite = {type: 'SET_WHITE', game: id, title: game.title, whitePlayer: game.whitePlayer, blackPlayer: game.blackPlayer, time: game.time };
 		} catch(err) {
 			return res.status(500).send(err);
 		}
 
-		socket.broadcast.emit(id, opposite);
 		return res.status(200).json(result);
 	});	
 
