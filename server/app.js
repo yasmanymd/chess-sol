@@ -4,7 +4,7 @@ const path = __dirname + '/app.js';
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 50000;
 
 var bodyParser = require('body-parser');
 
