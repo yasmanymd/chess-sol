@@ -1,6 +1,13 @@
 .room {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .board {
     border: solid 4px rgb(185,5,9);
@@ -90,5 +97,42 @@
 }
 .gameover {
     width: 170px !important;
-    margin: 10px 0 -16px 128px;
 }
+@media only screen and (max-width: 400px) {
+    .cell {
+        width: 40px;
+        height: 40px;
+        background-size: 55%;
+    }
+    .white-info.w-view {
+        order: 3
+    }
+    .white-info.b-view {
+        order: 1
+    }
+    .board {
+        order: 2;
+    }
+    .black-info.w-view {
+        order: 1
+    }
+    .black-info.b-view {
+        order: 3
+    }
+    .actions {
+        order: 4;
+    }
+    .game-over {
+        order: 5;
+    }
+  }
+  
+  /* Tablet Styles */
+  @media only screen and (min-width: 401px) and (max-width: 960px) {
+    
+  }
+  
+  /* Desktop Styles */
+  @media only screen and (min-width: 961px) {
+
+  }

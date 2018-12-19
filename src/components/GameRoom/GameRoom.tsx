@@ -3,9 +3,11 @@ import { Game } from 'src/models/Game';
 import { GameCard } from 'src/components/GameCard/GameCard';
 import { Utils } from '../../models/GameUtils';
 import './css/GameRoom.css';
-import { Drawer, TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Fab, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
 export interface IGameRoomState {
+    open: boolean;
     games: Game[];
     title: string;
     colorPiece: string;
@@ -22,9 +24,11 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     constructor(props: IGameRoomProps) {
         super(props);
 
-        this.state = { games: [], title: '', colorPiece: 'w', time: 300 };
+        this.state = { open: false, games: [], title: '', colorPiece: 'w', time: 300 };
 
         this.onNewGame = this.onNewGame.bind(this);
+        this.onCreateGame = this.onCreateGame.bind(this);
+        this.handleClose = this.handleClose.bind(this);
         this.onTitleChanged = this.onTitleChanged.bind(this);
         this.onTimeChanged = this.onTimeChanged.bind(this);
         this.joinGame = this.joinGame.bind(this);
@@ -52,6 +56,15 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     }
 
     onNewGame() {
+        this.setState({ open: true });
+    }
+
+    handleClose() {
+        this.setState({ open: false });
+    }
+
+    onCreateGame() {
+        const h = this.handleClose;
         const p = this.props;
         const s = this.state;
         if (s.title != null && s.title != '') {
@@ -70,6 +83,8 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
                         p.onActionReceived(action);
                     });
                 }
+
+                h();
             });
         }
     }
@@ -107,38 +122,43 @@ export class GameRoom extends React.Component<IGameRoomProps, IGameRoomState> {
     public render() {
         return (
             <div className="game-room">
-            <Drawer
-                className="drawer"
-                variant="permanent">
-                <div className="game-new">
-                    <TextField id="input-with-icon-grid" label="Title" onChange={this.onTitleChanged} />
-                    
-                    <div> 
-                        <FormControl>
-                            <InputLabel htmlFor="time-simple">Time</InputLabel>
-                            <Select
-                                value={this.state.time}
-                                onChange={this.onTimeChanged}>
-                                <MenuItem value={300}>5 min</MenuItem>
-                                <MenuItem value={420}>7 min</MenuItem>
-                                <MenuItem value={600}>10 min</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div style={{paddingTop: 10}}>
-                        <Button variant="contained" color="primary" onClick={this.onNewGame}>
-                            New
-                        </Button>
-                    </div>
+                <Dialog
+                    open={this.state.open}
+                    onClose={this.handleClose}
+                    aria-labelledby="form-dialog-title"
+                    >
+                    <DialogTitle id="form-dialog-title">New Game</DialogTitle>
+                    <DialogContent>
+                        <div className="game-new">
+                            <TextField id="input-with-icon-grid" label="Title" onChange={this.onTitleChanged} />
+                            
+                            <div> 
+                                <FormControl>
+                                    <InputLabel htmlFor="time-simple">Time</InputLabel>
+                                    <Select
+                                        value={this.state.time}
+                                        onChange={this.onTimeChanged}>
+                                        <MenuItem value={300}>5 min</MenuItem>
+                                        <MenuItem value={420}>7 min</MenuItem>
+                                        <MenuItem value={600}>10 min</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button variant="contained" color="primary" onClick={this.onCreateGame}>New</Button>
+                    </DialogActions>
+                    </Dialog>
+                <div className="game-list">
+                    {Object.keys(this.state.games).map((key: any) => {
+                        var game = this.state.games[key];
+                        return <GameCard key={game.id} game={game} onGameCardSelected={this.joinGame}></GameCard>;
+                    })}
                 </div>
-            </Drawer>
-            <div className="game-list">
-                {Object.keys(this.state.games).map((key: any) => {
-                    var game = this.state.games[key];
-                    return <GameCard key={game.id} game={game} onGameCardSelected={this.joinGame}></GameCard>;
-                })}
-            </div>
-                
+                <Fab color='primary' style={{ position: 'absolute', bottom: 15, right: 15 }} onClick={this.onNewGame}>
+                    <AddIcon />
+                </Fab>
                 
             </div>
         );

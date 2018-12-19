@@ -6,7 +6,7 @@
     margin-left: 10px;
 }
 .w-view {
-    flex-direction: column-reverse;
+    flex-direction: column;
 }
 .b-view {
     flex-direction: column;

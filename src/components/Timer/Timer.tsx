@@ -73,24 +73,22 @@ export class Timer extends React.Component<ITimerProps, ITimerState>{
         let ws = this.state.whiteSeconds%60;
         let bm = Math.floor(this.state.blackSeconds/60);
         let bs = this.state.blackSeconds%60;
-        let infoAttrs = {
-            className: classnames("info", {
+        let infoWhite = {
+            className: classnames("section", "white-info", {
+                "playing": this.props.whiteMove === true,
                 "w-view": this.props.whiteView === true || this.props.whiteView === null || this.props.whiteView === undefined,
                 "b-view": this.props.whiteView === false
             })
         };
-        let infoWhite = {
-            className: classnames("white-info", {
-                "playing": this.props.whiteMove === true
-            })
-        };
         let infoBlack = {
-            className: classnames("black-info", {
-                "playing": this.props.whiteMove === false
+            className: classnames("section", "black-info", {
+                "playing": this.props.whiteMove === false,
+                "w-view": this.props.whiteView === true || this.props.whiteView === null || this.props.whiteView === undefined,
+                "b-view": this.props.whiteView === false
             })
         };
         return (
-            <div {...infoAttrs}>
+            <>
                 <Paper {...infoWhite} elevation={1}>
                     <Typography variant="h5" component="h3">
                         {this.props.whitePlayer != undefined ? this.props.whitePlayer : null}
@@ -107,7 +105,7 @@ export class Timer extends React.Component<ITimerProps, ITimerState>{
                         {bm < 10 ? "0" + bm : bm}:{bs < 10 ? "0" + bs : bs}
                     </Typography>
                 </Paper>
-            </div>
+                </>
         );
     }
 }
