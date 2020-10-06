@@ -26,14 +26,16 @@
     "start": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js start",
     "build": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js build",
     "test": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js test --env=jsdom",
-    "eject": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js eject"
+    "eject": "node node_modules/react-scripts-ts/bin/react-scripts-ts.js eject",
+    "dev": "concurrently \"npm run start\" \"cd server && node app.js\""
   },
   "devDependencies": {
     "@types/jest": "^23.3.2",
     "@types/node": "^10.11.3",
     "@types/react": "^16.4.14",
     "@types/react-dom": "^16.0.8",
-    "typescript": "^3.1.1"
+    "typescript": "^3.1.1",
+    "concurrently": "^5.3.0"
   },
   "engines": {
     "node": "9.4.0"
