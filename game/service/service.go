@@ -3,11 +3,15 @@ package service
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
+	"github.com/chess-sol/game/repository"
+	"github.com/chess-sol/game/route"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 )
 
@@ -53,4 +57,15 @@ func Run() {
 		return
 	}
 
+	db, err := sqlx.Connect("postgres", BuildConnectionString())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := route.NewHandler(
+		repository.NewGameRepository(db),
+		repository.NewStrategyRepository(db),
+	)
+
+	log.Fatal(http.ListenAndServe(":5000", h))
 }
