@@ -29,7 +29,7 @@ func (gs *GameSuite) SetupSuite() {
 	db, err := sqlx.Connect("postgres", service.BuildConnectionString())
 	gs.Nil(err)
 
-	content, _ := ioutil.ReadFile("./testdata/init.sql")
+	content, _ := ioutil.ReadFile("./testdata/game.sql")
 	sql := string(content)
 	_, err = db.Exec(sql)
 	gs.Nil(err)
