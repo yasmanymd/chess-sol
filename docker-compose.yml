@@ -2,6 +2,28 @@ version: "3"
 services:
   app:
     build: portal
+    environment:
+      - POSTGRESQL_HOST=localhost
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_DATABASE=chessdb
+      - POSTGRESQL_USER=postgres      
+      - POSTGRESQL_PASSWORD=developer1.
     ports:
       - "3000:3000"
       - "50000:50000"
+
+  chessdb:
+    image: "bitnami/postgresql:latest"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_DATABASE=chessdb
+      - POSTGRESQL_PASSWORD=developer1.   
+
+  chesstest:
+    image: "bitnami/postgresql:latest"
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRESQL_DATABASE=chesstest
+      - POSTGRESQL_PASSWORD=developer1.   
