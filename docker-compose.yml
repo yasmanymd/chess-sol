@@ -12,6 +12,19 @@ services:
       - "3000:3000"
       - "50000:50000"
 
+  viewer:
+    build: 
+      context: ./viewer
+      dockerfile: ./Dockerfile
+    volumes: 
+      - type: bind
+        source: ./src
+        target: /app/src
+        volume:
+          nocopy: true
+    ports:
+      - "4000:3000"
+
   chessdb:
     image: "bitnami/postgresql:latest"
     ports:
