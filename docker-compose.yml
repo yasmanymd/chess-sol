@@ -13,17 +13,16 @@ services:
       - "50000:50000"
 
   viewer:
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
     build: 
       context: ./viewer
       dockerfile: ./Dockerfile
-    volumes: 
-      - type: bind
-        source: ./src
-        target: /app/src
-        volume:
-          nocopy: true
+    volumes:
+      - /app/node_modules
+      - ./viewer/src:/app/src
     ports:
-      - "4000:3000"
+      - "3000:3000"
 
   chessdb:
     image: "bitnami/postgresql:latest"

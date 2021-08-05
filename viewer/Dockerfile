@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 3000
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+CMD ["npm", "start"]
