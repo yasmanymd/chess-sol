@@ -5,7 +5,7 @@ import { Utils } from '../models/GameUtils';
 import { GameClient, BitGameState } from '../models/GameClient';
 
 export interface IBoardApp {
-    BoardPieces: IBoardPieces, 
+    BoardPieces: IBoardPieces,
     BoardState: IBoardState
 }
 
@@ -36,7 +36,7 @@ export interface IBoardState {
     blackPlayer?: string;
     W_MOVE?: boolean; //True - White, False - Black
     P_WHITE?: boolean;
-    
+
     B_CASTLING: number;
     W_CASTLING: number;
     W_VIEW: boolean; //True - White, False - Black
@@ -53,14 +53,14 @@ function createBoardPieces(): IBoardPieces {
         B_BISHOPS: Long.fromInt(0),
         B_QUEENS: Long.fromInt(0),
         B_KING: Long.fromInt(0),
-  
+
         W_PAWNS: Long.fromInt(0),
         W_ROOKS: Long.fromInt(0),
         W_KNIGHTS: Long.fromInt(0),
         W_BISHOPS: Long.fromInt(0),
         W_QUEENS: Long.fromInt(0),
         W_KING: Long.fromInt(0)
-      };
+    };
 
     return result;
 }
@@ -90,13 +90,13 @@ function initBoardPieces(): IBoardPieces {
 }
 
 function initBoardState(): IBoardState {
-    
+
     var init: IBoardState = {
-      B_CASTLING: 0,
-      W_CASTLING: 0,
-      W_VIEW: true,
-      CORONATE: null,
-      GAME_OVER: undefined
+        B_CASTLING: 0,
+        W_CASTLING: 0,
+        W_VIEW: true,
+        CORONATE: null,
+        GAME_OVER: undefined
     };
 
     return init;
@@ -145,7 +145,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 includeLastMove = false;
             }
 
-            g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);            
+            g.move(s.BoardPieces.SELECTED_POSITION || action.selected, action.position);
 
             return Object.assign({}, state, {
                 B_PAWNS: g.B_PAWNS,
@@ -161,13 +161,13 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 W_BISHOPS: g.W_BISHOPS,
                 W_QUEENS: g.W_QUEENS,
                 W_KING: g.W_KING,
-                
+
                 SELECTED_POSITION: selectedPosition,
                 FUTURE_MOVES: null,
                 isCheck: g.isCheck(!s.BoardState.W_MOVE),
                 GAME_OVER: checkGameOver(s)
-            }, 
-            includeLastMove ? {LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.selected, action.position]} : {});
+            },
+                includeLastMove ? { LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.selected, action.position] } : {});
         case ChessActionType.CORONATE:
             var s = action.state;
             g.loadGame(s.BoardPieces, s.BoardState);
@@ -188,7 +188,7 @@ export function BoardPiecesReducer(state: IBoardPieces = createBoardPieces(), ac
                 W_BISHOPS: g.W_BISHOPS,
                 W_QUEENS: g.W_QUEENS,
                 W_KING: g.W_KING,
-                
+
                 SELECTED_POSITION: null,
                 LAST_MOVE: [s.BoardPieces.SELECTED_POSITION || action.lastPosition, action.position],
                 FUTURE_MOVES: null,
@@ -204,7 +204,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_WHITE:
             return Object.assign({}, state, {
                 game: action.game,
-                time: action.time*1,
+                time: action.time * 1,
                 whitePlayer: action.whitePlayer,
                 blackPlayer: action.blackPlayer,
                 P_WHITE: true,
@@ -213,7 +213,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
         case ChessActionType.SET_BLACK:
             return Object.assign({}, state, {
                 game: action.game,
-                time: action.time*1,
+                time: action.time * 1,
                 whitePlayer: action.whitePlayer,
                 blackPlayer: action.blackPlayer,
                 P_WHITE: false,
@@ -230,6 +230,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                 W_VIEW: !state.W_VIEW
             });
         case ChessActionType.DO_MOVE:
+            Utils.saveNotation(action.state.BoardState.game, Utils.getPosition(action.selected), Utils.getPosition(action.position));
             var s = action.state;
             var g = GameClient.instance();
             if ((action.position >= 56 && BitGameState.getPiece(s.BoardPieces, s.BoardPieces.SELECTED_POSITION) === BitGameState.W_PAWNS_CHAR) ||
@@ -238,15 +239,46 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                     CORONATE: action.position
                 });
             }
-            var isGameOver = checkGameOver(s);            
+            var isGameOver = checkGameOver(s);
+
+            if (isGameOver && action.state.BoardState.P_WHITE) {
+                var result = "";
+                if (isGameOver == 1) {
+                    result = "1-0"
+                }
+                if (isGameOver == 2) {
+                    result = "0-1"
+                }
+                if (isGameOver == 3) {
+                    result = "1/2-1/2"
+                }
+                var game = {
+                    name: action.state.BoardState.whitePlayer + " vs " + action.state.BoardState.blackPlayer + " [" + new Date().toLocaleString() + "]",
+                    whiteName: action.state.BoardState.whitePlayer,
+                    blackName: action.state.BoardState.blackPlayer,
+                    strategyName: "",
+                    result: result,
+                    movements: Utils.getNotation(action.state.BoardState.game)
+                };
+                fetch("http://localhost:5000/game", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(game)
+                });
+                Utils.removeNotation(action.state.BoardState.game);
+            }
+
             return Object.assign({}, state, {
                 W_CASTLING: g.whiteCastling,
                 B_CASTLING: g.blackCastling,
-                
+
                 W_MOVE: !isGameOver ? !state.W_MOVE : null,
                 GAME_OVER: isGameOver
             });
         case ChessActionType.CORONATE:
+            Utils.saveNotation(action.state.BoardState.game, Utils.getPosition(action.selected), Utils.getPosition(action.position));
             var s = action.state;
             var isGameOver = checkGameOver(s);
             return Object.assign({}, state, {
