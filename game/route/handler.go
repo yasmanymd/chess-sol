@@ -31,6 +31,7 @@ func NewHandler(game repository.GameRepository, strategy repository.StrategyRepo
 
 	h.Post("/game", h.NewGame())
 	h.Post("/strategy", h.GetStrategyBy())
+	h.Post("/search", h.GetBy())
 	h.Get("/games", h.GetAll())
 
 	return h
@@ -77,6 +78,25 @@ func (h *Handler) GetStrategyBy() http.HandlerFunc {
 		}
 
 		render.JSON(w, r, strategy)
+	}
+}
+
+func (h *Handler) GetBy() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var request GetByRequest
+		err := json.NewDecoder(r.Body).Decode(&request)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		games, err := h.game.GetBy(request.PlayerName)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		render.JSON(w, r, games)
 	}
 }
 

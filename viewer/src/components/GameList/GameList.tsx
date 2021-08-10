@@ -20,7 +20,7 @@ import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { useEffect } from 'react';
-import { AppBar, Button, Dialog } from '@material-ui/core';
+import { AppBar, Button, Dialog, TextField } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import { TransitionProps } from '@material-ui/core/transitions/transition';
 import Slide from '@material-ui/core/Slide';
@@ -265,6 +265,38 @@ export default function GameList() {
     setPage(0);
   };
 
+  let controller = new AbortController();
+  let { signal } = controller;
+
+  const handleOnChange = (event: { currentTarget: { value: any; }; }) => {
+    controller.abort();
+    controller = new AbortController();
+    signal = controller.signal;
+
+    fetch("http://localhost:5000/search", {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        playerName: event.currentTarget.value
+      }), // body data type must match "Content-Type" header
+      signal
+    })
+      .then(res => res.json())
+      .then((result: Game[]) => {
+        if (result == null) {
+          result = [];
+        }
+        let m = new Map<string, Game>();
+        result.forEach((item: Game) => {
+          m.set(item.id, item);
+        });
+        setRows(result);
+        setMap(m);
+      });
+  }
+
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -275,6 +307,7 @@ export default function GameList() {
 
   return (
     <div className={classes.root}>
+      <TextField id="standard-basic" label="Search by player name" onChange={handleOnChange} style={{ paddingBottom: 10 }} />
       <Paper className={classes.paper}>
         <TableContainer>
           <Table

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/chess-sol/game/model"
 	"github.com/jmoiron/sqlx"
@@ -22,6 +23,7 @@ type GameRepository interface {
 	New(game *model.Game) error
 	Update(game *model.Game) error
 	GetAll() ([]model.Game, error)
+	GetBy(playerName string) ([]model.Game, error)
 }
 
 func (gameRepository *gameRepository) New(game *model.Game) error {
@@ -53,6 +55,16 @@ func (gameRepository *gameRepository) Update(game *model.Game) error {
 func (gameRepository *gameRepository) GetAll() ([]model.Game, error) {
 	var result []model.Game
 	err := gameRepository.Select(&result, "SELECT * FROM game")
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (gameRepository *gameRepository) GetBy(playerName string) ([]model.Game, error) {
+	var s = strings.ToLower("%" + playerName + "%")
+	var result []model.Game
+	err := gameRepository.Select(&result, "SELECT * FROM game WHERE lower(white_name) LIKE $1 OR lower(black_name) LIKE $2", s, s)
 	if err != nil {
 		return nil, err
 	}
