@@ -11,4 +11,5 @@ type Game struct {
 	BlackName    string         `json:"blackName" db:"black_name"`
 	StrategyName string         `json:"strategyName" db:"strategy_name"`
 	Movements    types.JSONText `json:"movements" db:"movements"`
+	Result       string         `json:"result" db:"result"`
 }

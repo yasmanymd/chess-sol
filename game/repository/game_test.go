@@ -5,8 +5,9 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/chess-sol/game/migration"
 	"github.com/chess-sol/game/model"
-	"github.com/chess-sol/game/service"
+	"github.com/chess-sol/game/utils"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
 	"github.com/joho/godotenv"
@@ -22,11 +23,13 @@ type GameSuite struct {
 func (gs *GameSuite) SetupSuite() {
 	godotenv.Load("../integration.env")
 
-	if err := service.MigrationsUp("file://../db/migrations"); err != nil {
+	connectionString := utils.BuildConnectionString()
+
+	if err := migration.MigrationsUp("file://../db/migrations", connectionString); err != nil {
 		gs.Nil(err)
 	}
 
-	db, err := sqlx.Connect("postgres", service.BuildConnectionString())
+	db, err := sqlx.Connect("postgres", connectionString)
 	gs.Nil(err)
 
 	content, _ := ioutil.ReadFile("./testdata/game.sql")
@@ -41,7 +44,7 @@ func (gs *GameSuite) SetupSuite() {
 }
 
 func (gs *GameSuite) TearDownSuite() {
-	if err := service.MigrationsDown("file://../db/migrations"); err != nil {
+	if err := migration.MigrationsDown("file://../db/migrations", utils.BuildConnectionString()); err != nil {
 		gs.Nil(err)
 	}
 }
@@ -57,6 +60,7 @@ func (gs *GameSuite) TestNew() {
 		BlackName:    "Mijail Tal",
 		StrategyName: "Defense Caro Kann",
 		Movements:    types.JSONText(string(movements)),
+		Result:       "1/2-1/2",
 	})
 	gs.Nil(err)
 
@@ -65,7 +69,8 @@ func (gs *GameSuite) TestNew() {
 							 AND black_name = 'Mijail Tal' 
 							 AND strategy_name = 'Defense Caro Kann'
 							 AND movements->0->>'position1' = 'e2'
-							 AND movements->0->>'position2' = 'e4'`)
+							 AND movements->0->>'position2' = 'e4'
+							 AND result = '1/2-1/2'`)
 	gs.Nil(err)
 
 	var count int
@@ -91,6 +96,7 @@ func (gs *GameSuite) TestUpdate() {
 	game.Name = "Updated Game"
 	game.StrategyName = ""
 	game.Movements = types.JSONText(string(movements))
+	game.Result = "1/2-1/2"
 
 	err = gs.gameRepository.Update(&game)
 	gs.Nil(err)
@@ -100,7 +106,8 @@ func (gs *GameSuite) TestUpdate() {
 							 AND black_name = 'Lazaro Bruzon' 
 							 AND strategy_name = ''
 							 AND movements->0->>'position1' = 'f2'
-							 AND movements->0->>'position2' = 'f4'`)
+							 AND movements->0->>'position2' = 'f4'
+							 AND result = '1/2-1/2'`)
 	gs.Nil(err)
 
 	var count int

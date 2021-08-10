@@ -4,5 +4,6 @@ CREATE TABLE game(
    white_name VARCHAR NOT NULL,
    black_name VARCHAR NOT NULL,
    strategy_name VARCHAR NOT NULL,
-   movements JSONB NOT NULL DEFAULT '{}'::JSONB
+   movements JSONB NOT NULL DEFAULT '{}'::JSONB,
+   result VARCHAR NOT NULL
 );

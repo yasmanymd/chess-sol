@@ -1,9 +1,24 @@
 version: "3"
 services:
+  game: 
+    build: game
+    ports:
+      - "5000:5000"
+    volumes: 
+      - ./game:/app
+    depends_on: 
+      - chessdb
+    environment:
+      - POSTGRESQL_HOST=chessdb
+      - POSTGRESQL_PORT=5432
+      - POSTGRESQL_DATABASE=chessdb
+      - POSTGRESQL_USER=postgres      
+      - POSTGRESQL_PASSWORD=developer1.    
+
   app:
     build: portal
     environment:
-      - POSTGRESQL_HOST=localhost
+      - POSTGRESQL_HOST=chessdb
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_DATABASE=chessdb
       - POSTGRESQL_USER=postgres      
@@ -19,7 +34,6 @@ services:
       context: ./viewer
       dockerfile: ./Dockerfile
     volumes:
-      - /app/node_modules
       - ./viewer/src:/app/src
     ports:
       - "3000:3000"

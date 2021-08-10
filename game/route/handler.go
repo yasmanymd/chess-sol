@@ -20,7 +20,7 @@ func NewHandler(game repository.GameRepository, strategy repository.StrategyRepo
 	}
 
 	h.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
@@ -31,6 +31,7 @@ func NewHandler(game repository.GameRepository, strategy repository.StrategyRepo
 
 	h.Post("/game", h.NewGame())
 	h.Post("/strategy", h.GetStrategyBy())
+	h.Get("/games", h.GetAll())
 
 	return h
 }
@@ -76,5 +77,17 @@ func (h *Handler) GetStrategyBy() http.HandlerFunc {
 		}
 
 		render.JSON(w, r, strategy)
+	}
+}
+
+func (h *Handler) GetAll() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		games, err := h.game.GetAll()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		render.JSON(w, r, games)
 	}
 }

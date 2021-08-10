@@ -21,13 +21,14 @@ func NewGameRepository(db *sqlx.DB) GameRepository {
 type GameRepository interface {
 	New(game *model.Game) error
 	Update(game *model.Game) error
+	GetAll() ([]model.Game, error)
 }
 
 func (gameRepository *gameRepository) New(game *model.Game) error {
 	id := 0
-	err := gameRepository.QueryRow(`INSERT INTO game(name,white_name,black_name,strategy_name,movements) 
-									VALUES($1, $2, $3, $4, $5) RETURNING id`,
-		game.Name, game.WhiteName, game.BlackName, game.StrategyName, game.Movements).Scan(&id)
+	err := gameRepository.QueryRow(`INSERT INTO game(name,white_name,black_name,strategy_name,movements,result) 
+									VALUES($1, $2, $3, $4, $5, $6) RETURNING id`,
+		game.Name, game.WhiteName, game.BlackName, game.StrategyName, game.Movements, game.Result).Scan(&id)
 	if err != nil {
 		return err
 	}
@@ -40,11 +41,20 @@ func (gameRepository *gameRepository) New(game *model.Game) error {
 
 func (gameRepository *gameRepository) Update(game *model.Game) error {
 	_, err := gameRepository.Exec(`UPDATE game 
-								   SET name=$1, white_name=$2, black_name=$3,strategy_name=$4,movements=$5 
-								   WHERE id = $6`,
-		game.Name, game.WhiteName, game.BlackName, game.StrategyName, game.Movements, game.Id)
+								   SET name=$1, white_name=$2, black_name=$3,strategy_name=$4,movements=$5,result=$6
+								   WHERE id = $7`,
+		game.Name, game.WhiteName, game.BlackName, game.StrategyName, game.Movements, game.Result, game.Id)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (gameRepository *gameRepository) GetAll() ([]model.Game, error) {
+	var result []model.Game
+	err := gameRepository.Select(&result, "SELECT * FROM game")
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

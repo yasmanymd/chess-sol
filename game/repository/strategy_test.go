@@ -6,7 +6,8 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/chess-sol/game/service"
+	"github.com/chess-sol/game/migration"
+	"github.com/chess-sol/game/utils"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
@@ -22,11 +23,13 @@ type StrategySuite struct {
 func (ss *StrategySuite) SetupSuite() {
 	godotenv.Load("../integration.env")
 
-	if err := service.MigrationsUp("file://../db/migrations"); err != nil {
+	connectionString := utils.BuildConnectionString()
+
+	if err := migration.MigrationsUp("file://../db/migrations", connectionString); err != nil {
 		ss.Nil(err)
 	}
 
-	db, err := sqlx.Connect("postgres", service.BuildConnectionString())
+	db, err := sqlx.Connect("postgres", connectionString)
 	ss.Nil(err)
 
 	content, _ := ioutil.ReadFile("./testdata/strategy.sql")
@@ -41,7 +44,7 @@ func (ss *StrategySuite) SetupSuite() {
 }
 
 func (ss *StrategySuite) TearDownSuite() {
-	if err := service.MigrationsDown("file://../db/migrations"); err != nil {
+	if err := migration.MigrationsDown("file://../db/migrations", utils.BuildConnectionString()); err != nil {
 		ss.Nil(err)
 	}
 }
