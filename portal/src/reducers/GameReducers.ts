@@ -104,12 +104,13 @@ function initBoardState(): IBoardState {
 
 function checkGameOver(state: any): number | null {
     let g = GameClient.instance();
-    if (g.isCheckMate(!state.BoardState.W_MOVE)) {
+    if (state.BoardState.W_MOVE && g.isCheckMate(false)) {
         return 1;
     }
-    if (g.isCheckMate(state.BoardState.W_MOVE)) {
+    if (!state.BoardState.W_MOVE && g.isCheckMate(true)) {
         return 2;
     }
+
     if (g.isTable(!state.BoardState.W_MOVE)) {
         return 3;
     }

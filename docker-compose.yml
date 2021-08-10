@@ -36,7 +36,7 @@ services:
     volumes:
       - ./viewer/src:/app/src
     ports:
-      - "3000:3000"
+      - "4000:3000"
 
   chessdb:
     image: "bitnami/postgresql:latest"
