@@ -261,7 +261,7 @@ export function BoardStateReducer(state: IBoardState = initBoardState(), action:
                     result: result,
                     movements: Utils.getNotation(action.state.BoardState.game)
                 };
-                fetch("http://localhost:5000/game", {
+                fetch("http://localhost:6000/game", {
                     method: "POST",
                     headers: {
                         'Content-Type': 'application/json'

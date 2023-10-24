@@ -1,19 +1,19 @@
 version: "3"
 services:
-  game: 
+  game:
     build: game
     ports:
-      - "5000:5000"
-    volumes: 
+      - "6000:5000"
+    volumes:
       - ./game:/app
-    depends_on: 
+    depends_on:
       - chessdb
     environment:
       - POSTGRESQL_HOST=chessdb
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_DATABASE=chessdb
-      - POSTGRESQL_USER=postgres      
-      - POSTGRESQL_PASSWORD=developer1.    
+      - POSTGRESQL_USER=postgres
+      - POSTGRESQL_PASSWORD=developer1.
 
   app:
     build: portal
@@ -21,7 +21,7 @@ services:
       - POSTGRESQL_HOST=chessdb
       - POSTGRESQL_PORT=5432
       - POSTGRESQL_DATABASE=chessdb
-      - POSTGRESQL_USER=postgres      
+      - POSTGRESQL_USER=postgres
       - POSTGRESQL_PASSWORD=developer1.
     ports:
       - "3000:3000"
@@ -30,7 +30,7 @@ services:
   viewer:
     environment:
       CHOKIDAR_USEPOLLING: "true"
-    build: 
+    build:
       context: ./viewer
       dockerfile: ./Dockerfile
     volumes:
@@ -44,7 +44,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRESQL_DATABASE=chessdb
-      - POSTGRESQL_PASSWORD=developer1.   
+      - POSTGRESQL_PASSWORD=developer1.
 
   chesstest:
     image: "bitnami/postgresql:latest"
@@ -52,4 +52,4 @@ services:
       - "5433:5432"
     environment:
       - POSTGRESQL_DATABASE=chesstest
-      - POSTGRESQL_PASSWORD=developer1.   
+      - POSTGRESQL_PASSWORD=developer1.

@@ -224,7 +224,7 @@ export default function GameList() {
   const [selectedGame, setSelectedGame] = React.useState<Game | undefined>(undefined);
 
   useEffect(() => {
-    fetch("http://localhost:5000/games")
+    fetch("http://localhost:6000/games")
       .then(res => res.json())
       .then(
         (result: Game[]) => {
@@ -273,7 +273,7 @@ export default function GameList() {
     controller = new AbortController();
     signal = controller.signal;
 
-    fetch("http://localhost:5000/search", {
+    fetch("http://localhost:6000/search", {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
       headers: {
         "Content-Type": "application/json; charset=utf-8",
