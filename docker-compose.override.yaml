@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  api:
+    env_file:
+      - .env
+    build:
+      context: ./api
+      target: development
+    restart: always
+    ports:
+      - ${API_PORT}:5000
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./api:/usr/src/app
+
+  postgres:
+    env_file:
+      - .env
+    image: postgres
+    restart: always
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  dbgate:
+    image: dbgate/dbgate
+    depends_on:
+      - postgres
+    restart: always
+    ports:
+      - 8081:3000
+    volumes:
+      - dbgate_data:/root/.dbgate
+    environment:
+      CONNECTIONS: con1
+
+      LABEL_con1: Postgres
+      SERVER_con1: ${POSTGRES_HOST}
+      USER_con1: ${POSTGRES_USER}
+      PASSWORD_con1: ${POSTGRES_PASSWORD}
+      PORT_con1: ${POSTGRES_PORT}
+      ENGINE_con1: postgres@dbgate-plugin-postgres
+
+volumes:
+  pg_data:
+  dbgate_data:
